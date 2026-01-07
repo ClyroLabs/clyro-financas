@@ -1,0 +1,178 @@
+<div class="container mx-auto max-w-5xl py-8">
+  <div class="text-center mb-12">
+    <h2 class="text-4xl font-extrabold text-white mb-4 drop-shadow-sm">{{ 'pricing_title' | translate }}</h2>
+    <p class="text-lg text-[#7AA5E8] max-w-2xl mx-auto">{{ 'pricing_desc' | translate }}</p>
+  </div>
+
+  <div class="flex justify-center mb-12">
+    <div class="flex items-center gap-2 p-1 bg-[#112240] rounded-xl border border-white/5 shadow-inner">
+      <button (click)="billingCycle.set('monthly')"
+              class="px-8 py-2.5 rounded-lg text-sm font-bold transition-all duration-200 ease-in-out focus:outline-none"
+              [class]="billingCycle() === 'monthly'
+                ? 'bg-white/10 text-white shadow-sm'
+                : 'text-gray-400 hover:text-white hover:bg-white/5'">
+        {{ 'monthly' | translate }}
+      </button>
+      <button (click)="billingCycle.set('yearly')"
+              class="px-8 py-2.5 rounded-lg text-sm font-bold transition-all duration-200 ease-in-out focus:outline-none relative"
+              [class]="billingCycle() === 'yearly'
+                ? 'bg-white/10 text-white shadow-sm'
+                : 'text-gray-400 hover:text-white hover:bg-white/5'">
+        {{ 'yearly' | translate }}
+        <span class="absolute -top-3 -right-3 bg-[#1E90FF] text-white text-[10px] font-bold px-2 py-0.5 rounded-full transform shadow-lg shadow-blue-500/40">
+          -20%
+        </span>
+      </button>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch">
+    <!-- Free Plan -->
+    <div class="glass-content p-8 flex flex-col transition-all hover:translate-y-[-5px] duration-300"
+         [class.border-[#1E90FF]]="currentPlan() === 'free'">
+      <h3 class="text-xl font-bold text-white">{{ 'free' | translate }}</h3>
+      <p class="text-gray-400 text-sm mt-2 min-h-[40px]">{{ 'free_plan_desc' | translate }}</p>
+      <div class="my-8">
+        <span class="text-4xl font-bold text-white">{{ 0 | dynamicCurrency }}</span>
+      </div>
+      <div class="w-full h-px bg-white/5 mb-6"></div>
+      <h4 class="text-sm font-semibold text-[#7AA5E8] uppercase tracking-wide mb-4">{{ 'plan_features' | translate }}</h4>
+      <ul class="space-y-4 text-gray-300 text-sm mb-8 flex-grow">
+        <li class="flex items-center">
+          <svg class="w-5 h-5 text-[#1E90FF] mr-3 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
+          <span>{{ 'feature_dashboard' | translate }}</span>
+        </li>
+        <li class="flex items-center">
+          <svg class="w-5 h-5 text-[#1E90FF] mr-3 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
+          <span>{{ 'feature_financial_snapshot' | translate }}</span>
+        </li>
+         <li class="flex items-center">
+          <svg class="w-5 h-5 text-[#1E90FF] mr-3 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
+          <span>{{ 'feature_tax_calculator' | translate }}</span>
+        </li>
+      </ul>
+      @if (currentPlan() === 'free') {
+        <button 
+          disabled
+          class="w-full mt-auto py-3 px-4 font-bold rounded-xl transition-colors duration-200 bg-white/5 text-gray-400 border border-white/5 disabled:cursor-not-allowed">
+          {{ 'current_plan' | translate }}
+        </button>
+      } @else {
+        <button 
+          (click)="openDowngradeModal('free')"
+          class="w-full mt-auto py-3 px-4 font-bold rounded-xl transition-colors duration-200 bg-white/10 text-white hover:bg-white/20">
+          {{ 'downgrade_to_free' | translate }}
+        </button>
+      }
+    </div>
+
+    <!-- Basic Plan -->
+    <div class="glass-content p-8 flex flex-col transition-all hover:translate-y-[-5px] duration-300 relative"
+         [class.border-[#1E90FF]]="currentPlan() === 'basic'">
+      <h3 class="text-xl font-bold text-white">{{ 'basic' | translate }}</h3>
+      <p class="text-gray-400 text-sm mt-2 min-h-[40px]">{{ 'basic_plan_desc' | translate }}</p>
+      <div class="my-8">
+        <div class="flex items-baseline">
+            <span class="text-4xl font-bold text-white">{{ basicPrice() | dynamicCurrency }}</span>
+            <span class="text-sm font-medium text-gray-400 ml-2">{{ billingCycle() === 'monthly' ? ('per_month' | translate) : ('per_year' | translate) }}</span>
+        </div>
+        @if (currencyService.selectedCurrency() !== 'USD') {
+          <p class="text-gray-500 text-xs mt-1">~ {{ currencyService.formatUSD(pricingService.getPrice('basic', billingCycle())) }}</p>
+        }
+      </div>
+      <div class="w-full h-px bg-white/5 mb-6"></div>
+       <h4 class="text-sm font-semibold text-[#7AA5E8] uppercase tracking-wide mb-4">{{ 'plan_features' | translate }}</h4>
+      <ul class="space-y-4 text-gray-300 text-sm mb-8 flex-grow">
+        <li class="flex items-center">
+          <svg class="w-5 h-5 text-[#1E90FF] mr-3 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
+          <span class="font-medium text-white">{{ 'feature_everything_in_free' | translate }}</span>
+        </li>
+        <li class="flex items-center">
+          <svg class="w-5 h-5 text-[#1E90FF] mr-3 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
+          <span>{{ 'feature_smart_tax' | translate }}</span>
+        </li>
+        <li class="flex items-center">
+          <svg class="w-5 h-5 text-[#1E90FF] mr-3 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
+          <span>{{ 'feature_consulting' | translate }}</span>
+        </li>
+      </ul>
+      <button 
+        (click)="handlePlanSelection('basic')"
+        [disabled]="getButtonAction('basic') === 'current'"
+        class="w-full mt-auto py-4 px-6 font-bold rounded-xl transition-all duration-300 text-lg uppercase tracking-wider"
+        [class]="getButtonAction('basic') === 'current' ? 'bg-white/5 text-gray-400 border border-white/5 cursor-not-allowed' : 'bg-cyan-600 hover:bg-cyan-500 text-white shadow-[0_0_20px_rgba(8,145,178,0.4)] hover:shadow-[0_0_30px_rgba(34,211,238,0.6)] transform hover:-translate-y-1'">
+        @switch (getButtonAction('basic')) {
+          @case ('current') { {{ 'current_plan' | translate }} }
+          @case ('upgrade') { {{ 'upgrade_to_plan' | translate: { planName: ('basic' | translate) } }} }
+          @case ('downgrade') { {{ 'downgrade_to_plan' | translate: { planName: ('basic' | translate) } }} }
+        }
+      </button>
+    </div>
+
+    <!-- Premium Plan -->
+    <div class="glass-content p-8 flex flex-col transition-all hover:translate-y-[-5px] duration-300 relative border-[#1E90FF] shadow-[0_0_30px_rgba(30,144,255,0.15)]">
+      <div class="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-[#1E90FF] text-white text-xs font-bold px-4 py-1 rounded-full shadow-lg">
+        {{ 'most_popular' | translate }}
+      </div>
+      <h3 class="text-xl font-bold text-[#1E90FF]">{{ 'premium' | translate }}</h3>
+      <p class="text-gray-400 text-sm mt-2 min-h-[40px]">{{ 'premium_plan_desc' | translate }}</p>
+      <div class="my-8">
+        <div class="flex items-baseline">
+            <span class="text-4xl font-bold text-white">{{ premiumPrice() | dynamicCurrency }}</span>
+            <span class="text-sm font-medium text-gray-400 ml-2">{{ billingCycle() === 'monthly' ? ('per_month' | translate) : ('per_year' | translate) }}</span>
+        </div>
+        @if (currencyService.selectedCurrency() !== 'USD') {
+          <p class="text-gray-500 text-xs mt-1">~ {{ currencyService.formatUSD(pricingService.getPrice('premium', billingCycle())) }}</p>
+        }
+      </div>
+      <div class="w-full h-px bg-gradient-to-r from-transparent via-[#1E90FF]/50 to-transparent mb-6"></div>
+      <h4 class="text-sm font-semibold text-[#7AA5E8] uppercase tracking-wide mb-4">{{ 'plan_features' | translate }}</h4>
+      <ul class="space-y-4 text-gray-300 text-sm mb-8 flex-grow">
+        <li class="flex items-center">
+          <svg class="w-5 h-5 text-[#8B5CF6] mr-3 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
+          <span class="font-medium text-white">{{ 'feature_everything_in_basic' | translate }}</span>
+        </li>
+        <li class="flex items-center">
+          <svg class="w-5 h-5 text-[#8B5CF6] mr-3 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
+          <span>{{ 'feature_business_plan' | translate }}</span>
+        </li>
+        <li class="flex items-center">
+          <svg class="w-5 h-5 text-[#8B5CF6] mr-3 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
+          <span>{{ 'feature_market_insights' | translate }}</span>
+        </li>
+      </ul>
+       <button 
+        (click)="handlePlanSelection('premium')"
+        [disabled]="getButtonAction('premium') === 'current'"
+        class="w-full mt-auto py-4 px-6 font-bold rounded-xl transition-all duration-300 text-lg uppercase tracking-wider"
+        [class]="getButtonAction('premium') === 'current' ? 'bg-white/5 text-gray-400 border border-white/5 cursor-not-allowed' : 'btn-primary-gradient text-white shadow-[0_0_20px_rgba(6,182,212,0.5)] hover:shadow-[0_0_40px_rgba(34,211,238,0.7)] transform hover:-translate-y-1 hover:scale-[1.02]'">
+        @switch (getButtonAction('premium')) {
+          @case ('current') { {{ 'current_plan' | translate }} }
+          @case ('upgrade') { {{ 'upgrade_to_plan' | translate: { planName: ('premium' | translate) } }} }
+          @case ('downgrade') { {{ 'downgrade_to_plan' | translate: { planName: ('premium' | translate) } }} }
+        }
+      </button>
+    </div>
+  </div>
+</div>
+
+<app-confirmation-modal
+  [show]="showDowngradeModal()"
+  [isProcessing]="isProcessingDowngrade()"
+  titleKey="downgrade_confirm_title"
+  messageKey="downgrade_confirm_body"
+  [messageParams]="downgradeMessageParams()"
+  confirmButtonKey="confirm_downgrade"
+  (confirm)="confirmDowngrade()"
+  (cancel)="cancelDowngrade()">
+</app-confirmation-modal>
+
+<app-confirmation-modal
+  [show]="showUpgradeModal()"
+  titleKey="upgrade_confirm_title"
+  messageKey="upgrade_confirm_body"
+  [messageParams]="upgradeMessageParams()"
+  confirmButtonKey="confirm_upgrade"
+  (confirm)="confirmUpgrade()"
+  (cancel)="cancelUpgrade()">
+</app-confirmation-modal>

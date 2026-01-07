@@ -1,0 +1,155 @@
+<div class="relative w-full min-h-full overflow-hidden bg-[#020617] rounded-3xl border border-white/5 shadow-2xl">
+  <!-- Electric/Fintech Background (Login Style) -->
+  <div class="absolute inset-0 w-full h-full overflow-hidden pointer-events-none">
+      <div class="absolute top-[-50%] left-[-50%] w-[200%] h-[200%] bg-[conic-gradient(from_0deg,transparent_0_340deg,#06b6d4_360deg)] animate-spin-slow mix-blend-color-dodge filter blur-[25px] opacity-60"></div>
+      <div class="absolute top-[-50%] left-[-50%] w-[200%] h-[200%] bg-[conic-gradient(from_180deg,transparent_0_340deg,#3b82f6_360deg)] animate-reverse-spin mix-blend-color-dodge filter blur-[25px] opacity-60"></div>
+  </div>
+
+  <div class="relative z-10 p-6 lg:p-8">
+    <div class="container mx-auto max-w-4xl">
+      <h2 class="text-3xl font-bold text-white mb-8 drop-shadow-md">{{ 'account_settings' | translate }}</h2>
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Left Column: Profile -->
+        <div class="lg:col-span-1 space-y-8">
+           <!-- Personal Information -->
+            <div class="glass-content p-6">
+                <h3 class="text-xl font-semibold text-cyan-400 mb-6">{{ 'personal_information' | translate }}</h3>
+                @if(profileForm) {
+                  <form [formGroup]="profileForm" (ngSubmit)="saveProfile()" class="space-y-6">
+                      <!-- Avatar -->
+                      <div class="flex flex-col items-center space-y-4">
+                          <p class="text-sm font-bold text-white">{{ 'profile_picture' | translate }}</p>
+                          <div class="relative">
+                              <img [ngSrc]="previewUrl() || 'https://i.pravatar.cc/150?u=' + user()?.id" width="128" height="128" class="w-32 h-32 rounded-full object-cover border-2 border-gray-600" alt="User Avatar">
+                              <button type="button" (click)="triggerFileInput()" class="absolute -bottom-2 -right-2 bg-cyan-500 hover:bg-cyan-600 rounded-full p-2 text-white shadow-md transition hover:scale-110">
+                                  <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" /></svg>
+                              </button>
+                              <input type="file" #fileInput class="hidden" accept="image/png, image/jpeg" (change)="onFileSelected($event)">
+                          </div>
+                      </div>
+
+                      <!-- Form Fields -->
+                      <div>
+                          <label for="name" class="block text-sm font-bold text-white mb-1.5">{{ 'full_name' | translate }}</label>
+                          <input type="text" id="name" formControlName="name" class="clyro-input">
+                      </div>
+                      <div>
+                          <label for="address" class="block text-sm font-bold text-white mb-1.5">{{ 'address' | translate }}</label>
+                          <input type="text" id="address" formControlName="address" class="clyro-input">
+                      </div>
+                      <div>
+                          <label for="phoneNumber" class="block text-sm font-bold text-white mb-1.5">{{ 'phone_number' | translate }}</label>
+                          <input type="tel" appPhoneMask id="phoneNumber" formControlName="phoneNumber" class="clyro-input">
+                      </div>
+
+                      <div class="flex justify-end">
+                          <button type="submit" [disabled]="profileForm.invalid || !profileForm.dirty" class="w-full px-4 py-2 text-white font-semibold rounded-xl btn-primary-gradient disabled:opacity-50 disabled:cursor-not-allowed disabled:box-shadow-none">{{ 'save_changes' | translate }}</button>
+                      </div>
+                  </form>
+                }
+            </div>
+        </div>
+        <!-- Right Column: Settings -->
+        <div class="lg:col-span-2 space-y-8">
+          <!-- Preferences -->
+          <div class="glass-content p-6">
+            <h3 class="text-xl font-semibold text-cyan-400 mb-6">{{ 'preferences' | translate }}</h3>
+             @if(preferencesForm) {
+                <form [formGroup]="preferencesForm" (ngSubmit)="savePreferences()" class="space-y-6">
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div>
+                      <label for="language" class="block text-sm font-bold text-white mb-1.5">{{ 'language' | translate }}</label>
+                      <select id="language" formControlName="language" class="clyro-select clyro-input">
+                        <option value="en">English</option>
+                        <option value="pt">Português</option>
+                        <option value="es">Español</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label for="currency" class="block text-sm font-bold text-white mb-1.5">{{ 'currency' | translate }}</label>
+                      <select id="currency" formControlName="currency" class="clyro-select clyro-input">
+                        <option value="USD">USD ($)</option>
+                        <option value="BRL">BRL (R$)</option>
+                        <option value="EUR">EUR (€)</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="flex justify-end">
+                    <button type="submit" [disabled]="preferencesForm.invalid || !preferencesForm.dirty" class="px-6 py-2 text-white font-semibold rounded-xl btn-primary-gradient disabled:opacity-50 disabled:cursor-not-allowed disabled:box-shadow-none">{{ 'save_changes' | translate }}</button>
+                  </div>
+                </form>
+              }
+          </div>
+
+          <!-- Security -->
+          <div class="glass-content p-6">
+            <h3 class="text-xl font-semibold text-cyan-400 mb-6">{{ 'security' | translate }}</h3>
+             @if(securityForm) {
+              <form [formGroup]="securityForm" (ngSubmit)="saveSecuritySettings()" class="space-y-6">
+                <div class="flex items-start">
+                  <div class="flex items-center h-5">
+                    <input id="use2fa" type="checkbox" formControlName="use2fa" class="h-4 w-4 rounded border-gray-500 bg-gray-700 text-cyan-600 focus:ring-cyan-500 focus:ring-offset-gray-800">
+                  </div>
+                  <div class="ml-3 text-sm">
+                    <label for="use2fa" class="font-bold text-white">{{ user()?.use2fa ? ('disable_2fa' | translate) : ('enable_2fa' | translate) }}</label>
+                    <p class="text-gray-400">{{ user()?.use2fa ? ('2fa_enabled_message' | translate) : ('2fa_disabled_message' | translate) }}</p>
+                  </div>
+                </div>
+                @if (securityForm.get('use2fa')?.value) {
+                  <div class="pl-8">
+                    <label class="block text-sm font-bold text-white mb-2">{{ 'two_factor_method' | translate }}</label>
+                    <div class="flex space-x-4">
+                        <label class="flex items-center p-3 rounded-md bg-gray-900 border border-gray-600 cursor-pointer has-[:checked]:border-cyan-500 has-[:checked]:bg-cyan-900/20 hover:bg-white/5 transition">
+                            <input type="radio" formControlName="twoFactorMethod" value="authenticator" class="h-4 w-4 text-cyan-600 bg-gray-700 border-gray-500 focus:ring-cyan-500">
+                            <span class="ml-3 text-sm text-white">{{ 'google_authenticator' | translate }}</span>
+                        </label>
+                        <label class="flex items-center p-3 rounded-md bg-gray-900 border border-gray-600 cursor-pointer has-[:checked]:border-cyan-500 has-[:checked]:bg-cyan-900/20 hover:bg-white/5 transition">
+                            <input type="radio" formControlName="twoFactorMethod" value="email" class="h-4 w-4 text-cyan-600 bg-gray-700 border-gray-500 focus:ring-cyan-500">
+                            <span class="ml-3 text-sm text-white">{{ 'email' | translate }}</span>
+                        </label>
+                    </div>
+                  </div>
+                }
+                <div class="flex justify-end">
+                  <button type="submit" [disabled]="securityForm.invalid || !securityForm.dirty" class="px-6 py-2 text-white font-semibold rounded-xl btn-primary-gradient disabled:opacity-50 disabled:cursor-not-allowed disabled:box-shadow-none">{{ 'save_changes' | translate }}</button>
+                </div>
+              </form>
+             }
+          </div>
+
+          <!-- Danger Zone -->
+          <div class="glass-content p-6 border-red-500/30">
+            <h3 class="text-xl font-semibold text-red-400 mb-4">{{ 'danger_zone' | translate }}</h3>
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="font-bold text-white">{{ 'delete_account' | translate }}</p>
+                    <p class="text-sm text-gray-400">{{ 'delete_account_desc' | translate }}</p>
+                </div>
+                <button (click)="showDeleteModal.set(true)" class="px-4 py-2 text-sm font-semibold text-white bg-red-600/80 rounded-xl hover:bg-red-600 transition shadow-[0_4px_15px_rgba(239,68,68,0.3)] border border-red-500/50">
+                  {{ 'delete_account' | translate }}
+                </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modals -->
+<app-setup-2fa-modal 
+  [show]="show2faSetupModal()" 
+  [secretKey]="user()?.twoFactorSecret || ''"
+  (verified)="handle2faSetupVerified()"
+  (cancel)="handle2faSetupCancel()">
+</app-setup-2fa-modal>
+
+<app-confirmation-modal
+  [show]="showDeleteModal()"
+  [isProcessing]="isDeleting()"
+  titleKey="delete_account_confirm_title"
+  messageKey="delete_account_confirm_message"
+  confirmButtonKey="delete_account_button"
+  (confirm)="deleteAccount()"
+  (cancel)="showDeleteModal.set(false)">
+</app-confirmation-modal>

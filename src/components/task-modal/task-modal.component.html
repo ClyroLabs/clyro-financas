@@ -1,0 +1,47 @@
+@if (show()) {
+  <div class="fixed inset-0 bg-black/60 z-40 flex items-center justify-center p-4 backdrop-blur-sm animate-fade-in" (click)="onClose()">
+    <div class="glass-content w-full max-w-lg" (click)="$event.stopPropagation()">
+      <form [formGroup]="taskForm" (ngSubmit)="onSubmit()">
+        <div class="p-6">
+          <h3 class="text-xl font-bold text-white mb-6">{{ (task() ? 'edit_task' : 'add_task') | translate }}</h3>
+          
+          <div class="space-y-4">
+            <div>
+              <label for="title" class="block text-sm font-bold text-white mb-1.5">{{ 'task_title' | translate }}</label>
+              <input type="text" id="title" formControlName="title" class="clyro-input">
+            </div>
+             <div>
+              <label for="description" class="block text-sm font-bold text-white mb-1.5">{{ 'task_description' | translate }}</label>
+              <textarea id="description" formControlName="description" rows="3" class="clyro-input"></textarea>
+            </div>
+             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+               <div>
+                <label for="dueDate" class="block text-sm font-bold text-white mb-1.5">{{ 'due_date' | translate }}</label>
+                <input type="date" id="dueDate" formControlName="dueDate" class="clyro-input">
+              </div>
+              <div>
+                <label for="recurrence" class="block text-sm font-bold text-white mb-1.5">{{ 'task_recurrence' | translate }}</label>
+                <select id="recurrence" formControlName="recurrence" class="clyro-input clyro-select">
+                    <option value="none">{{ 'recurrence_none' | translate }}</option>
+                    <option value="daily">{{ 'recurrence_daily' | translate }}</option>
+                    <option value="weekdays">{{ 'recurrence_weekdays' | translate }}</option>
+                    <option value="weekly">{{ 'recurrence_weekly' | translate }}</option>
+                    <option value="biweekly">{{ 'recurrence_biweekly' | translate }}</option>
+                    <option value="monthly">{{ 'recurrence_monthly' | translate }}</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="px-6 py-4 rounded-b-lg flex justify-end items-center space-x-4 border-t border-white/10">
+          <button type="button" (click)="onClose()" class="px-4 py-2 text-sm font-semibold rounded-xl transition btn-secondary-glass">
+            {{ 'cancel' | translate }}
+          </button>
+          <button type="submit" [disabled]="taskForm.invalid" class="px-4 py-2 text-sm font-semibold rounded-xl transition btn-primary-gradient">
+            {{ 'save_task' | translate }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}

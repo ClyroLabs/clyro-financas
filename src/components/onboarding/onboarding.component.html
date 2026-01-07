@@ -1,0 +1,26 @@
+@if (isTourActive() && currentStep(); as step) {
+  <div class="fixed inset-0 z-50">
+    <!-- Overlay -->
+    <div class="fixed inset-0 bg-black/60" (click)="skip()"></div>
+
+    <!-- Tooltip -->
+    <div 
+        class="absolute bg-gray-800 text-white p-4 rounded-lg shadow-2xl border border-gray-700/50 max-w-xs transition-all duration-300" 
+        [style.top]="tooltipPosition().top" 
+        [style.left]="tooltipPosition().left" 
+        [style.right]="tooltipPosition().right"
+        [style.bottom]="tooltipPosition().bottom"
+        [style.transform]="tooltipPosition().transform">
+      
+      <h4 class="font-bold text-lg mb-2 text-cyan-400">{{ step.titleKey | translate }}</h4>
+      <p class="text-sm text-gray-300 mb-4">{{ step.contentKey | translate }}</p>
+
+      <div class="flex justify-between items-center">
+        <button (click)="skip()" class="text-sm text-gray-400 hover:text-white transition">{{ 'tour_skip' | translate }}</button>
+        <button (click)="next()" class="px-4 py-2 text-sm font-semibold rounded-md transition bg-cyan-500 text-white hover:bg-cyan-600">
+            {{ (onboardingService.currentStepIndex() < 4) ? ('tour_next' | translate) : ('tour_finish' | translate) }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

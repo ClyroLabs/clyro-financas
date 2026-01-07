@@ -1,0 +1,109 @@
+<div class="relative w-full min-h-full overflow-hidden bg-[#020617] rounded-3xl border border-white/5 shadow-2xl">
+  <!-- Electric/Fintech Background (Login Style) -->
+  <div class="absolute inset-0 w-full h-full overflow-hidden pointer-events-none">
+      <div class="absolute top-[-50%] left-[-50%] w-[200%] h-[200%] bg-[conic-gradient(from_0deg,transparent_0_340deg,#06b6d4_360deg)] animate-spin-slow mix-blend-color-dodge filter blur-[25px] opacity-60"></div>
+      <div class="absolute top-[-50%] left-[-50%] w-[200%] h-[200%] bg-[conic-gradient(from_180deg,transparent_0_340deg,#3b82f6_360deg)] animate-reverse-spin mix-blend-color-dodge filter blur-[25px] opacity-60"></div>
+  </div>
+
+  <div class="relative z-10 p-6 lg:p-8">
+    <div class="container mx-auto max-w-4xl">
+      <div class="flex items-center mb-8">
+        <button (click)="backToPricing()" class="p-2 rounded-full hover:bg-gray-700/50 transition mr-4">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+        <h2 class="text-3xl font-bold text-white drop-shadow-md">{{ 'checkout_title' | translate }}</h2>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
+        <!-- Order Summary -->
+        <div class="lg:col-span-2 glass-content p-6 h-fit">
+          <h3 class="text-xl font-semibold text-cyan-400 border-b border-gray-700 pb-4 mb-6">{{ 'order_summary' | translate }}</h3>
+          <div class="space-y-4">
+            <div class="flex justify-between items-center text-sm">
+              <span class="text-gray-400">{{ 'upgrading_from' | translate }}</span>
+              <span class="font-semibold text-white">{{ currentPlanDisplayName() }}</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-400">{{ 'plan' | translate }}</span>
+              <span class="font-semibold text-white">{{ planDisplayName() }}</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-400">{{ 'billing_cycle' | translate }}</span>
+              <span class="font-semibold text-white">{{ billingCycle() === 'monthly' ? ('monthly' | translate) : ('yearly' | translate) }}</span>
+            </div>
+            <div class="border-t border-gray-700 my-4"></div>
+            <div class="flex justify-between items-center text-lg">
+              <span class="text-gray-300">{{ 'total_due_today' | translate }}</span>
+              <span class="font-bold text-cyan-400">{{ price() | dynamicCurrency }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Payment Methods -->
+        <div class="lg:col-span-3 glass-content p-6">
+          <h3 class="text-xl font-semibold text-cyan-400 border-b border-gray-700 pb-4 mb-6">{{ 'select_payment_method' | translate }}</h3>
+          <div class="space-y-4">
+            @if (settings().enableCreditCard) {
+              <div (click)="selectPaymentMethod('credit-card')"
+                   class="p-4 border rounded-lg cursor-pointer transition"
+                   [class]="selectedPaymentMethod() === 'credit-card' ? 'border-cyan-500 bg-cyan-900/20' : 'border-gray-600 hover:border-gray-500'">
+                <div class="flex items-center">
+                  <input type="radio" name="payment-method" class="h-4 w-4 text-cyan-600 bg-gray-700 border-gray-500 focus:ring-cyan-500" [checked]="selectedPaymentMethod() === 'credit-card'">
+                  <label class="ml-3 block text-sm font-medium text-white">{{ 'credit_card' | translate }}</label>
+                </div>
+                <p class="text-gray-400 text-sm mt-2 ml-7">{{ 'credit_card_desc' | translate }}</p>
+              </div>
+            }
+
+            @if (settings().enableCrypto) {
+               <div (click)="selectPaymentMethod('crypto-web3')"
+                   class="p-4 border rounded-lg cursor-pointer transition"
+                   [class]="selectedPaymentMethod() === 'crypto-web3' ? 'border-cyan-500 bg-cyan-900/20' : 'border-gray-600 hover:border-gray-500'">
+                <div class="flex items-center">
+                  <input type="radio" name="payment-method" class="h-4 w-4 text-cyan-600 bg-gray-700 border-gray-500 focus:ring-cyan-500" [checked]="selectedPaymentMethod() === 'crypto-web3'">
+                  <label class="ml-3 block text-sm font-medium text-white">{{ 'crypto_web3' | translate }}</label>
+                </div>
+                 <p class="text-gray-400 text-sm mt-2 ml-7">{{ 'crypto_web3_desc' | translate }}</p>
+              </div>
+               <div (click)="selectPaymentMethod('crypto-gatepay')"
+                   class="p-4 border rounded-lg cursor-pointer transition"
+                   [class]="selectedPaymentMethod() === 'crypto-gatepay' ? 'border-cyan-500 bg-cyan-900/20' : 'border-gray-600 hover:border-gray-500'">
+                <div class="flex items-center">
+                  <input type="radio" name="payment-method" class="h-4 w-4 text-cyan-600 bg-gray-700 border-gray-500 focus:ring-cyan-500" [checked]="selectedPaymentMethod() === 'crypto-gatepay'">
+                  <label class="ml-3 block text-sm font-medium text-white">{{ 'crypto_gatepay' | translate }}</label>
+                </div>
+                 <p class="text-gray-400 text-sm mt-2 ml-7">{{ 'crypto_gatepay_desc' | translate }}</p>
+              </div>
+            }
+          </div>
+
+          @if (paymentError()) {
+            <div class="mt-6 bg-red-500/10 border border-red-500/30 text-red-300 p-3 rounded-lg text-sm">
+                {{ paymentError() }}
+            </div>
+          }
+
+          <div class="mt-8">
+            <button 
+              (click)="processPayment()"
+              [disabled]="!selectedPaymentMethod() || isLoading()"
+              class="w-full px-6 py-3 text-white font-semibold rounded-xl btn-primary-gradient transition disabled:opacity-50 disabled:cursor-not-allowed disabled:box-shadow-none flex items-center justify-center">
+              @if (isLoading()) {
+                <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                {{ 'processing_payment' | translate }}
+              } @else {
+                {{ 'complete_purchase' | translate }}
+              }
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

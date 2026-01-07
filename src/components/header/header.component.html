@@ -1,0 +1,75 @@
+<!-- 
+  GLASS HEADER 
+  - Uses .glass-header from styles.css 
+  - Sticky positioning ensures the blur effect scrolls over content
+-->
+<header class="h-20 flex-shrink-0 flex items-center justify-center md:justify-between px-6 glass-header sticky top-0 z-20">
+  <!-- Left side: Hamburger menu for mobile -->
+  <div class="absolute left-6 md:static flex items-center">
+    <button (click)="toggleSidebar()" class="md:hidden text-gray-400 hover:text-white focus:outline-none p-2 rounded-lg hover:bg-white/5 transition-colors">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Right side: User menu -->
+  <div class="absolute right-6 md:static flex items-center gap-4">
+    <!-- Explicit Logout Button (Desktop) - Styled as glass button -->
+    <button (click)="logout()" class="hidden md:flex items-center justify-center p-2.5 text-gray-300 hover:text-red-400 hover:bg-white/10 border border-transparent hover:border-red-500/20 rounded-xl transition-all" title="{{ 'logout' | translate }}">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+      </svg>
+    </button>
+
+    <div class="h-8 w-px bg-white/10 hidden md:block"></div>
+
+    <div class="relative">
+      <button (click)="toggleDropdown()" class="flex items-center space-x-3 user-menu-button group focus:outline-none p-1.5 rounded-full hover:bg-white/5 transition-colors" data-tour-id="header-user-menu">
+        @if (user(); as u) {
+          <div class="text-right hidden sm:block transition-opacity duration-200">
+            <p class="text-sm font-semibold text-white group-hover:text-[#1E90FF]">{{ u.name }}</p>
+            <p class="text-xs text-[#7AA5E8] capitalize">{{ u.role }}</p>
+          </div>
+          <div class="relative">
+            <img [ngSrc]="u.avatarUrl || 'https://i.pravatar.cc/150?u=' + u.id" width="40" height="40" class="w-10 h-10 rounded-full object-cover ring-2 ring-white/10 group-hover:ring-[#1E90FF] transition-all shadow-lg" alt="User Avatar">
+            <div class="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-green-500 border-2 border-[#0A0F1A]"></div>
+          </div>
+        }
+      </button>
+      
+      <!-- Dropdown Menu - FIXED: Solid Dark Background for readability -->
+      @if (isDropdownOpen()) {
+        <div class="absolute right-0 mt-3 w-56 bg-[#0A0F1A] rounded-xl shadow-2xl py-2 z-50 origin-top-right animate-fade-in-down border border-white/20 ring-1 ring-black ring-opacity-5 focus:outline-none">
+          <!-- Mobile Only User Info Header in Menu -->
+          @if (user(); as u) {
+            <div class="px-4 py-3 border-b border-white/10 sm:hidden">
+              <p class="text-sm text-white font-bold">{{ u.name }}</p>
+              <p class="text-xs text-gray-400 truncate">{{ u.email }}</p>
+            </div>
+          }
+
+          <a routerLink="/settings" (click)="toggleDropdown()" class="flex items-center px-4 py-3 text-sm text-gray-300 hover:bg-white/10 hover:text-white transition-colors cursor-pointer">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-3 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+            {{ 'settings' | translate }}
+          </a>
+          <div class="h-px bg-white/10 my-1"></div>
+          <a href="#" (click)="logout(); $event.preventDefault()" class="flex items-center px-4 py-3 text-sm text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-colors cursor-pointer">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
+            {{ 'logout' | translate }}
+          </a>
+        </div>
+      }
+    </div>
+  </div>
+</header>
+
+<style>
+  @keyframes fade-in-down {
+    0% { opacity: 0; transform: translateY(-10px) scale(0.95); }
+    100% { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .animate-fade-in-down {
+    animation: fade-in-down 0.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  }
+</style>

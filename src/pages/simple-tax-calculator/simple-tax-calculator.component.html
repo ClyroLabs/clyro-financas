@@ -1,0 +1,134 @@
+<div class="glass-content p-6 flex flex-col">
+    <!-- Mode Toggle -->
+    <div class="mb-6">
+        <label class="block text-sm font-bold text-white mb-2">{{ 'calculation_mode' | translate }}</label>
+        <div class="flex rounded-xl shadow-inner bg-black/40 p-1 border border-white/5">
+            <button type="button" (click)="calculationMode.set('progressive')" 
+                    class="w-full py-2 px-4 rounded-lg text-sm font-medium transition-all"
+                    [class]="calculationMode() === 'progressive' ? 'bg-cyan-600 text-white shadow-md' : 'text-gray-400 hover:text-white hover:bg-white/5'">
+                {{ 'progressive_by_country' | translate }}
+            </button>
+            <button type="button" (click)="calculationMode.set('flat')" 
+                    class="w-full py-2 px-4 rounded-lg text-sm font-medium transition-all"
+                    [class]="calculationMode() === 'flat' ? 'bg-cyan-600 text-white shadow-md' : 'text-gray-400 hover:text-white hover:bg-white/5'">
+                {{ 'flat_rate' | translate }}
+            </button>
+        </div>
+    </div>
+    
+    <form [formGroup]="taxForm" (ngSubmit)="calculateTax()" class="space-y-5">
+        @if (calculationMode() === 'progressive') {
+          <div>
+              <label for="country" class="block text-sm font-bold text-white mb-1.5">{{ 'country' | translate }}</label>
+              <select id="country" formControlName="country" class="clyro-select clyro-input">
+                  <option value="usa">{{ 'usa' | translate }}</option>
+                  <option value="brazil">{{ 'brazil' | translate }}</option>
+                  <option value="spain">{{ 'spain' | translate }}</option>
+              </select>
+          </div>
+        }
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div>
+                <label for="income" class="block text-sm font-bold text-white mb-1.5">{{ 'gross_annual_income' | translate }}</label>
+                <input type="text" appCurrencyMask id="income" formControlName="income" class="clyro-input" placeholder="0.00">
+                <p class="text-[10px] text-gray-400 mt-1 ml-1">{{ 'gross_annual_income_desc' | translate }}</p>
+            </div>
+            <div>
+                <label for="deductions" class="block text-sm font-bold text-white mb-1.5">{{ 'pre_tax_deductions' | translate }}</label>
+                <input type="text" appCurrencyMask id="deductions" formControlName="deductions" class="clyro-input" placeholder="0.00">
+                 <p class="text-[10px] text-gray-400 mt-1 ml-1">{{ 'pre_tax_deductions_desc' | translate }}</p>
+            </div>
+        </div>
+        
+        @if (calculationMode() === 'flat') {
+          <div>
+            <label for="rate" class="block text-sm font-bold text-white mb-1.5">{{ 'tax_rate_percent' | translate }}</label>
+            <input type="number" id="rate" formControlName="rate" class="clyro-input">
+          </div>
+        }
+        
+        @if (calculationMode() === 'progressive') {
+            <!-- Presets Section -->
+            <div class="pt-2">
+                <h3 class="text-sm font-semibold text-gray-300 mb-2">{{ 'tax_presets_title' | translate }}</h3>
+                <p class="text-xs text-gray-400 mb-3">{{ 'tax_presets_desc' | translate }}</p>
+                @if (taxForm.get('country')?.value; as selectedCountry) {
+                    <div class="flex flex-wrap gap-2">
+                        @switch (selectedCountry) {
+                            @case ('usa') { @for(p of presets().usa; track p.id) { <button type="button" (click)="applyPreset(p)" class="px-3 py-1.5 text-xs font-medium text-cyan-200 bg-cyan-900/40 border border-cyan-500/30 rounded-full hover:bg-cyan-800/60 transition">{{ p.nameKey | translate }}</button> } }
+                            @case ('brazil') { @for(p of presets().brazil; track p.id) { <button type="button" (click)="applyPreset(p)" class="px-3 py-1.5 text-xs font-medium text-cyan-200 bg-cyan-900/40 border border-cyan-500/30 rounded-full hover:bg-cyan-800/60 transition">{{ p.nameKey | translate }}</button> } }
+                            @case ('spain') { @for(p of presets().spain; track p.id) { <button type="button" (click)="applyPreset(p)" class="px-3 py-1.5 text-xs font-medium text-cyan-200 bg-cyan-900/40 border border-cyan-500/30 rounded-full hover:bg-cyan-800/60 transition">{{ p.nameKey | translate }}</button> } }
+                        }
+                    </div>
+                }
+            </div>
+
+            <!-- Tax Brackets Table -->
+            <div class="pt-4">
+                <h3 class="text-sm font-semibold text-gray-300 mb-3">{{ 'tax_brackets' | translate }}</h3>
+                <div class="bg-black/30 p-4 rounded-xl border border-white/5">
+                    <div class="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
+                        <div class="font-semibold text-gray-400 border-b border-white/10 pb-2">{{ 'taxable_income_range' | translate }}</div>
+                        <div class="font-semibold text-gray-400 border-b border-white/10 pb-2 text-right">{{ 'tax_rate' | translate }}</div>
+
+                        @for(bracket of activeBrackets(); track $index) {
+                            @let prevThreshold = $index > 0 ? activeBrackets()[$index - 1].threshold : 0;
+                            <div class="text-gray-300 py-1 font-mono text-xs sm:text-sm">
+                                @if (prevThreshold === 0) {
+                                    {{ 'up_to' | translate }} {{ bracket.threshold | dynamicCurrency }}
+                                } @else if (bracket.threshold === Infinity) {
+                                    {{ 'over' | translate }} {{ prevThreshold | dynamicCurrency }}
+                                } @else {
+                                    {{ prevThreshold | dynamicCurrency }} - {{ bracket.threshold | dynamicCurrency }}
+                                }
+                            </div>
+                            <div class="text-cyan-400 font-medium text-right py-1 text-xs sm:text-sm">{{ bracket.rate * 100 }}%</div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+
+        <!-- Action Buttons -->
+        <div class="!mt-8 flex flex-col sm:flex-row gap-4">
+             <button type="button" (click)="clearForm()" class="w-full flex justify-center py-3.5 px-4 border border-white/10 rounded-xl shadow-sm text-sm font-semibold text-white btn-secondary-glass">
+                {{ 'clear_form' | translate }}
+            </button>
+            <button type="submit" [disabled]="taxForm.invalid" class="w-full flex justify-center py-3.5 px-4 rounded-xl shadow-lg text-sm font-bold text-white btn-primary-gradient disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none">
+                {{ 'calculate_tax' | translate }}
+            </button>
+        </div>
+    </form>
+
+    @if (taxResult(); as result) {
+        <div #resultsContainer class="mt-8 pt-8 border-t border-white/10 animate-fade-in">
+            <h2 class="text-xl font-bold text-white mb-6">{{ 'tax_results' | translate }}</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+                <div class="bg-white/5 p-5 rounded-xl border border-white/5"><p class="text-sm text-gray-400 uppercase tracking-wider mb-1">{{ 'your_taxable_income' | translate }}</p><p class="text-2xl font-bold text-white">{{ result.taxableIncome | dynamicCurrency }}</p></div>
+                <div class="bg-white/5 p-5 rounded-xl border border-white/5"><p class="text-sm text-gray-400 uppercase tracking-wider mb-1">{{ 'effective_tax_rate' | translate }}</p><p class="text-2xl font-bold text-white">{{ result.effectiveRate | dynamicDecimal:'1.2-2' }}%</p></div>
+                <div class="bg-cyan-500/10 border border-cyan-500/30 p-5 rounded-xl"><p class="text-sm text-cyan-200 uppercase tracking-wider mb-1">{{ 'estimated_total_tax' | translate }}</p><p class="text-2xl font-bold text-cyan-400 drop-shadow-sm">{{ result.totalTax | dynamicCurrency }}</p></div>
+            </div>
+            <div class="mt-8">
+                <h3 class="text-lg font-semibold text-white mb-4">{{ 'tax_breakdown' | translate }}</h3>
+                <div class="space-y-2">
+                    @if (calculationMode() === 'progressive') {
+                        @for (item of result.breakdown; track $index) {
+                            <div class="grid grid-cols-[1fr_auto_1fr] gap-2 items-center bg-black/20 p-3 rounded-lg text-sm border border-white/5 hover:bg-white/5 transition-colors">
+                                <span class="text-gray-300 font-mono">{{ item.taxableAmount | dynamicCurrency }}</span>
+                                <span class="text-gray-400 text-center text-xs">x {{ item.rate * 100 | dynamicDecimal:'1.0-2' }}%</span>
+                                <span class="font-medium text-white text-right font-mono">= {{ item.tax | dynamicCurrency }}</span>
+                            </div>
+                        }
+                    } @else {
+                        <div class="grid grid-cols-[1fr_auto_1fr] gap-2 items-center bg-black/20 p-3 rounded-lg text-sm border border-white/5">
+                            <span class="text-gray-300 font-mono">{{ result.breakdown[0].taxableAmount | dynamicCurrency }}</span>
+                            <span class="text-gray-400 text-center text-xs">x {{ result.breakdown[0].rate * 100 | dynamicDecimal:'1.0-2' }}%</span>
+                            <span class="font-medium text-white text-right font-mono">= {{ result.breakdown[0].tax | dynamicCurrency }}</span>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>

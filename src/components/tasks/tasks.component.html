@@ -1,0 +1,82 @@
+<div class="mt-8 glass-card p-6">
+  <div class="flex justify-between items-center mb-6">
+    <h3 class="text-xl font-bold text-white">{{ 'tasks' | translate }}</h3>
+    <button (click)="openAddTaskModal()" class="px-4 py-2 btn-primary-gradient text-white font-semibold rounded-xl hover:shadow-lg transition flex items-center text-sm">
+      <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+      {{ 'add_task' | translate }}
+    </button>
+  </div>
+
+  <div class="space-y-3">
+    @if (sortedTasks().length > 0) {
+      @for (task of sortedTasks(); track task.id) {
+        <div class="bg-white/5 border border-white/5 p-4 rounded-xl flex items-center justify-between transition-all hover:bg-white/10" [class.opacity-50]="task.completed">
+          <div class="flex items-center">
+            <div class="relative flex items-center">
+              <input 
+                type="checkbox" 
+                [checked]="task.completed" 
+                (change)="toggleCompletion(task.id)"
+                class="peer h-5 w-5 appearance-none rounded-full border-2 border-gray-500 bg-transparent checked:border-[#1E90FF] checked:bg-[#1E90FF] hover:border-[#1E90FF] transition-all cursor-pointer">
+              <svg class="absolute w-3.5 h-3.5 pointer-events-none hidden peer-checked:block text-white left-1 top-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+            </div>
+            <div class="ml-4">
+              <p class="font-medium text-white flex items-center" [class.line-through]="task.completed" [class.text-gray-400]="task.completed">
+                {{ task.title }}
+                @if(task.recurrence && task.recurrence !== 'none') {
+                  <span [title]="getRecurrenceTooltip(task.recurrence)">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline-block ml-2 text-[#00BFFF]" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 110 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" />
+                    </svg>
+                  </span>
+                }
+                @if(isDueSoon(task)) {
+                  <span title="Due soon">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline-block ml-2 text-[#F59E0B]" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.414-1.415L11 9.586V6z" clip-rule="evenodd" />
+                    </svg>
+                  </span>
+                }
+              </p>
+              <p class="text-sm text-gray-400" [class.line-through]="task.completed">
+                {{ task.description }}
+              </p>
+            </div>
+          </div>
+          <div class="flex items-center space-x-3">
+            <span 
+              class="text-sm font-medium px-2 py-1 rounded-md bg-black/20" 
+              [class.text-red-400]="!task.completed && task.dueDate < today"
+              [class.text-gray-400]="task.completed || task.dueDate >= today">
+              {{ task.dueDate | date:'shortDate' }}
+            </span>
+            <button (click)="openEditTaskModal(task)" class="p-2 text-gray-400 hover:text-white rounded-full hover:bg-white/10 transition" [title]="'edit_task' | translate">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.5L16.732 3.732z"></path></svg>
+            </button>
+            <button (click)="deleteTask(task.id)" class="p-2 text-gray-400 hover:text-red-400 rounded-full hover:bg-white/10 transition" [title]="'delete_task' | translate">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+            </button>
+          </div>
+        </div>
+      }
+    } @else {
+      <div class="text-center py-12 text-gray-500">
+        <div class="bg-white/5 rounded-full p-4 w-20 h-20 mx-auto flex items-center justify-center mb-4">
+            <svg class="h-10 w-10 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+            </svg>
+        </div>
+        <p class="text-base font-medium text-gray-400">{{ 'no_tasks_yet' | translate }}</p>
+      </div>
+    }
+  </div>
+</div>
+
+<app-task-modal 
+  [show]="isModalOpen()" 
+  [task]="selectedTask()"
+  (save)="saveTask($event)"
+  (close)="closeModal()">
+</app-task-modal>

@@ -1,0 +1,603 @@
+/* Import Poppins is handled in index.html, setting family here */
+body {
+  font-family: 'Poppins', sans-serif;
+  background-color: #05080f;
+  /* Fallback deep dark */
+}
+
+/* Custom Scrollbar for Dark Navy Theme */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* --- GLASSMORPHISM PHYSICS ENGINE --- */
+
+/* Universal Glass Base */
+.glass-panel,
+.glass-card {
+  background: rgba(17, 25, 40, 0.4);
+  /* More transparent for modern feel */
+  backdrop-filter: blur(20px) saturate(140%);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+  border-radius: 1.5rem;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.glass-header {
+  background: rgba(17, 25, 40, 0.3);
+  backdrop-filter: blur(20px) saturate(120%);
+  -webkit-backdrop-filter: blur(20px) saturate(120%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Hover effects for interactive glass elements */
+.glass-card:hover {
+  background: rgba(30, 41, 59, 0.5);
+  border-color: rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+  box-shadow: 0 15px 40px 0 rgba(0, 0, 0, 0.4);
+}
+
+/* --- NEW: SPECIFIC GLASS CONTENT STYLE (For Internal Pages) --- */
+/* FORCED VISIBILITY: Increased opacity slightly and added strong border/shadow */
+.glass-content {
+  background: rgba(255, 255, 255, 0.03) !important;
+  /* Very subtle filler */
+  backdrop-filter: blur(24px) !important;
+  -webkit-backdrop-filter: blur(24px) !important;
+  border-radius: 16px !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+  /* Stronger shadow for depth */
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 10;
+}
+
+/* --- CLYRO INPUT SYSTEM --- */
+/* DEFINITIVELY COPIED FROM LOGIN SCREEN AS PER REQUEST */
+
+.clyro-input {
+  display: block;
+  width: 100%;
+  border-radius: 0.75rem;
+  /* rounded-xl (12px) from login */
+
+  /* Style from login screen */
+  background-color: rgba(0, 0, 0, 0.4) !important;
+  /* bg-black/40 */
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  /* border-white/10 */
+  backdrop-filter: none !important;
+  /* Explicitly remove blur effect */
+
+  padding: 0.75rem 1rem;
+  /* Equivalent to py-3 px-4 */
+
+  /* Typography */
+  color: #FFFFFF !important;
+  font-weight: 500;
+  font-size: 0.875rem;
+  /* text-sm */
+  line-height: 1.25rem;
+  /* leading-5 */
+  transition: all 0.2s ease-in-out;
+
+  /* Reset browser appearance */
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+
+  position: relative;
+  z-index: 20;
+}
+
+/* Placeholder color from login screen */
+.clyro-input::placeholder {
+  color: #6B7280 !important;
+  /* Tailwind's gray-500 */
+  opacity: 1 !important;
+  font-weight: 400;
+}
+
+.clyro-input::-webkit-input-placeholder {
+  color: #6B7280 !important;
+  /* Tailwind's gray-500 */
+  opacity: 1 !important;
+}
+
+/* Hover state from login screen */
+.clyro-input:hover {
+  background-color: rgba(0, 0, 0, 0.5) !important;
+  /* hover:bg-black/50 */
+  border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Focus state from login screen */
+.clyro-input:focus {
+  background-color: rgba(0, 0, 0, 0.5) !important;
+  /* Keep it dark */
+  background: rgba(6, 182, 212, 0.15);
+  border-color: rgba(6, 182, 212, 0.4);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.1);
+  /* Mimics focus:ring-2 focus:ring-cyan-500 */
+  color: #FFFFFF !important;
+}
+
+/* Custom Scrollbar for overflow containers */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(6, 182, 212, 0.3);
+  border-radius: 4px;
+  transition: background 0.3s ease;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(6, 182, 212, 0.5);
+}
+
+/* Firefox scrollbar */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(6, 182, 212, 0.3) rgba(255, 255, 255, 0.03);
+}
+
+/* Select specific styling */
+.clyro-select {
+  appearance: none;
+  -webkit-appearance: none;
+  /* Cyan arrow for visibility on dark background */
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2300FFFF' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 0.75rem center;
+  background-repeat: no-repeat;
+  background-size: 1.5em 1.5em;
+  padding-right: 2.5rem;
+}
+
+.clyro-select option {
+  background-color: #0A0F1A;
+  color: white;
+}
+
+/* Secondary/Ghost Button */
+.btn-secondary-glass {
+  background: rgba(255, 255, 255, 0.03);
+  /* Lighter glass */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #e5e7eb;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  font-weight: 500;
+  border-radius: 12px;
+}
+
+.btn-secondary-glass:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.3);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+/* Export Button with Neon Hover */
+.btn-export-neon {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-export-neon:hover {
+  background: linear-gradient(135deg, rgba(6, 182, 212, 0.15) 0%, rgba(34, 211, 238, 0.15) 100%);
+  border-color: rgba(6, 182, 212, 0.6);
+  box-shadow: 0 0 20px rgba(6, 182, 212, 0.3),
+    0 4px 12px rgba(6, 182, 212, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  transform: translateY(-1px);
+}
+
+.btn-export-neon:hover svg {
+  filter: drop-shadow(0 0 4px rgba(6, 182, 212, 0.8));
+}
+
+.btn-export-neon:active {
+  transform: translateY(0);
+}
+
+/* Primary Gradient Button - "Glassy Cyan Energy" */
+.btn-primary-gradient {
+  /* Semi-transparent gradient for tech feel */
+  background: linear-gradient(135deg, rgba(8, 145, 178, 0.85) 0%, rgba(6, 182, 212, 0.85) 100%);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  box-shadow: 0 4px 15px rgba(6, 182, 212, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  font-weight: 600;
+  letter-spacing: 0.025em;
+  border-radius: 12px;
+}
+
+.btn-primary-gradient:hover:not(:disabled) {
+  background: linear-gradient(135deg, rgba(6, 182, 212, 0.95) 0%, rgba(34, 211, 238, 0.95) 100%);
+  box-shadow: 0 8px 25px rgba(34, 211, 238, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px) scale(1.01);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.btn-primary-gradient:active:not(:disabled) {
+  transform: translateY(0) scale(0.98);
+}
+
+.btn-primary-gradient:disabled {
+  opacity: 0.5;
+  background: rgba(51, 65, 85, 0.5);
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+/* Animated Back Button - Glass with Gradient Border */
+.btn-back-gradient {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.08) 100%);
+  border: 1px solid rgba(6, 182, 212, 0.3);
+  color: #94a3b8;
+  font-weight: 500;
+  font-size: 0.875rem;
+  border-radius: 0.75rem;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+
+.btn-back-gradient:hover {
+  background: linear-gradient(135deg, rgba(6, 182, 212, 0.1) 0%, rgba(6, 182, 212, 0.2) 100%);
+  border-color: rgba(6, 182, 212, 0.6);
+  color: #22d3ee;
+  transform: translateX(-4px);
+  box-shadow: 0 4px 20px rgba(6, 182, 212, 0.15);
+}
+
+.btn-back-gradient:active {
+  transform: translateX(-2px) scale(0.98);
+}
+
+.btn-back-gradient svg {
+  transition: transform 0.3s ease;
+}
+
+.btn-back-gradient:hover svg {
+  transform: translateX(-4px);
+}
+
+/* --- NEON BLUE EFFECT CLASSES --- */
+
+/* Neon Card with Cyan Glow */
+.neon-card {
+  background: linear-gradient(135deg, rgba(6, 182, 212, 0.03) 0%, rgba(59, 130, 246, 0.05) 100%);
+  border: 1px solid rgba(6, 182, 212, 0.15);
+  border-radius: 1rem;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.neon-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(6, 182, 212, 0.5), transparent);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.neon-card:hover {
+  border-color: rgba(6, 182, 212, 0.4);
+  box-shadow: 0 0 30px rgba(6, 182, 212, 0.15),
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  transform: translateY(-2px);
+}
+
+.neon-card:hover::before {
+  opacity: 1;
+}
+
+/* Neon Cyan Button */
+.btn-neon-cyan {
+  background: linear-gradient(135deg, rgba(6, 182, 212, 0.8) 0%, rgba(34, 211, 238, 0.8) 100%);
+  color: white;
+  border: 1px solid rgba(34, 211, 238, 0.3);
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  box-shadow: 0 0 20px rgba(6, 182, 212, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.btn-neon-cyan:hover:not(:disabled) {
+  background: linear-gradient(135deg, rgba(34, 211, 238, 0.95) 0%, rgba(6, 182, 212, 0.95) 100%);
+  box-shadow: 0 0 35px rgba(34, 211, 238, 0.4),
+    0 8px 25px rgba(6, 182, 212, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px) scale(1.02);
+  border-color: rgba(34, 211, 238, 0.6);
+}
+
+.btn-neon-cyan:active:not(:disabled) {
+  transform: translateY(0) scale(0.98);
+}
+
+.btn-neon-cyan:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Neon Tab Styling */
+.neon-tab {
+  position: relative;
+  padding: 0.75rem 1.5rem;
+  color: #94a3b8;
+  font-weight: 500;
+  font-size: 0.875rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.neon-tab::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #06b6d4, #22d3ee);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: translateX(-50%);
+  box-shadow: 0 0 10px rgba(6, 182, 212, 0.5);
+}
+
+.neon-tab:hover {
+  color: #22d3ee;
+}
+
+.neon-tab:hover::after {
+  width: 60%;
+}
+
+.neon-tab.active {
+  color: #22d3ee;
+  text-shadow: 0 0 10px rgba(34, 211, 238, 0.5);
+}
+
+.neon-tab.active::after {
+  width: 100%;
+}
+
+/* Neon Section Divider */
+.neon-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(6, 182, 212, 0.4), transparent);
+  margin: 2rem 0;
+}
+
+/* Translucent Card Transition */
+.glass-transition {
+  animation: glass-fade-in 0.5s ease-out forwards;
+}
+
+@keyframes glass-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+    filter: blur(4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+/* --- MESH GRADIENT ANIMATION BACKGROUND --- */
+.mesh-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;
+  background-color: #020617;
+  overflow: hidden;
+}
+
+.mesh-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.5;
+  /* Slightly reduced opacity to help text contrast */
+  animation: float-mesh 20s infinite ease-in-out;
+}
+
+.mesh-blob-1 {
+  top: -10%;
+  left: -10%;
+  width: 50vw;
+  height: 50vw;
+  background: #1e3a8a;
+  /* Dark Blue */
+  animation-delay: 0s;
+}
+
+.mesh-blob-2 {
+  bottom: -10%;
+  right: -10%;
+  width: 60vw;
+  height: 60vw;
+  background: #0f4c75;
+  /* Teal/Blue */
+  animation-delay: -5s;
+}
+
+.mesh-blob-3 {
+  top: 20%;
+  left: 30%;
+  width: 40vw;
+  height: 40vw;
+  background: #4c1d95;
+  /* Deep Purple */
+  animation-delay: -10s;
+  opacity: 0.3;
+}
+
+.mesh-blob-4 {
+  bottom: 10%;
+  left: 10%;
+  width: 30vw;
+  height: 30vw;
+  background: #0e7490;
+  /* Cyan */
+  animation-delay: -15s;
+}
+
+@keyframes float-mesh {
+
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+
+  33% {
+    transform: translate(30px, -50px) scale(1.1);
+  }
+
+  66% {
+    transform: translate(-20px, 20px) scale(0.9);
+  }
+}
+
+/* Typography and Utilities */
+.text-secondary {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* Existing Animations */
+@keyframes neon-pulse {
+
+  0%,
+  100% {
+    filter: drop-shadow(0 0 10px rgba(6, 182, 212, 0.4)) brightness(1);
+    opacity: 0.95;
+  }
+
+  50% {
+    filter: drop-shadow(0 0 25px rgba(6, 182, 212, 0.9)) brightness(1.15);
+    opacity: 1;
+  }
+}
+
+.animate-neon-pulse {
+  animation: neon-pulse 4s ease-in-out infinite;
+  will-change: filter, opacity;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-slow {
+  animation: spin 15s linear infinite;
+}
+
+.animate-reverse-spin {
+  animation: spin 20s linear infinite reverse;
+}
+
+@keyframes pulse {
+
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: .7;
+    transform: scale(1.05);
+  }
+}
+
+.animate-pulse-slow {
+  animation: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.3s ease-out forwards;
+}
