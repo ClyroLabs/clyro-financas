@@ -3,6 +3,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
+import { TranslationService, Language } from '../../services/translation.service';
 import { AdminService } from '../../services/admin.service';
 
 @Component({
@@ -17,9 +18,17 @@ export class SignupComponent {
   private authService = inject(AuthService);
   private router = inject(Router);
   adminService = inject(AdminService);
+  translationService = inject(TranslationService);
 
   signupFailed = signal(false);
+  showLanguageMenu = signal(false);
   settings = this.adminService.settings;
+  currentLang = this.translationService.currentLang;
+
+  setLanguage(lang: Language) {
+    this.translationService.setLanguage(lang);
+    this.showLanguageMenu.set(false);
+  }
 
   signupForm = this.fb.group({
     name: ['', [Validators.required]],

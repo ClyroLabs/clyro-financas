@@ -1,4 +1,5 @@
-import { Injectable, computed, signal, OnDestroy } from '@angular/core';
+import { Injectable, computed, signal, OnDestroy, effect, inject } from '@angular/core';
+import { TranslationService } from './translation.service';
 
 interface CurrencyInfo {
   locale: string;
@@ -13,6 +14,8 @@ export type CryptoAsset = 'ETH' | 'BNB' | 'USDT' | 'WBTC' | 'BTC';
   providedIn: 'root'
 })
 export class CurrencyService implements OnDestroy {
+  private translationService = inject(TranslationService);
+
   // Mock exchange rates based on USD, now as a signal
   private fiatRates = signal({
     'USD': 1,
@@ -36,6 +39,22 @@ export class CurrencyService implements OnDestroy {
   constructor() {
     // Simulate real-time updates every 15 seconds
     this.updateInterval = setInterval(() => this.fetchAndUpdateRates(), 15000);
+
+    // Sync currency with language changes
+    effect(() => {
+      const lang = this.translationService.currentLang();
+      switch (lang) {
+        case 'en':
+          this.selectedCurrency.set('USD');
+          break;
+        case 'pt':
+          this.selectedCurrency.set('BRL');
+          break;
+        case 'es':
+          this.selectedCurrency.set('EUR');
+          break;
+      }
+    });
   }
 
   ngOnDestroy() {
@@ -55,7 +74,7 @@ export class CurrencyService implements OnDestroy {
       return;
     }
     this.lastCryptoUpdate = now;
-    
+
     // In a real app, this would be an API call.
     // Here, we simulate fluctuations.
     this.fiatRates.update(currentRates => {
@@ -67,12 +86,12 @@ export class CurrencyService implements OnDestroy {
       return newRates;
     });
     this.cryptoRatesUSD.update(currentRates => {
-        const newRates = { ...currentRates };
-        newRates.ETH = parseFloat((currentRates.ETH * (1 + (Math.random() - 0.5) * 0.05)).toFixed(2));
-        newRates.BNB = parseFloat((currentRates.BNB * (1 + (Math.random() - 0.5) * 0.06)).toFixed(2));
-        newRates.WBTC = parseFloat((currentRates.WBTC * (1 + (Math.random() - 0.5) * 0.04)).toFixed(2));
-        newRates.BTC = parseFloat((currentRates.BTC * (1 + (Math.random() - 0.5) * 0.04)).toFixed(2));
-        return newRates;
+      const newRates = { ...currentRates };
+      newRates.ETH = parseFloat((currentRates.ETH * (1 + (Math.random() - 0.5) * 0.05)).toFixed(2));
+      newRates.BNB = parseFloat((currentRates.BNB * (1 + (Math.random() - 0.5) * 0.06)).toFixed(2));
+      newRates.WBTC = parseFloat((currentRates.WBTC * (1 + (Math.random() - 0.5) * 0.04)).toFixed(2));
+      newRates.BTC = parseFloat((currentRates.BTC * (1 + (Math.random() - 0.5) * 0.04)).toFixed(2));
+      return newRates;
     });
   }
 
@@ -116,7 +135,7 @@ export class CurrencyService implements OnDestroy {
   }
 
   getCryptoPriceInUSD(asset: CryptoAsset): number {
-      return this.cryptoRatesUSD()[asset];
+    return this.cryptoRatesUSD()[asset];
   }
 
   format(value: number, options?: { notation?: 'compact' }): string {

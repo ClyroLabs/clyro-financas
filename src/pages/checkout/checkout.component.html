@@ -1,15 +1,20 @@
 <div class="relative w-full min-h-full overflow-hidden bg-[#020617] rounded-3xl border border-white/5 shadow-2xl">
   <!-- Electric/Fintech Background (Login Style) -->
   <div class="absolute inset-0 w-full h-full overflow-hidden pointer-events-none">
-      <div class="absolute top-[-50%] left-[-50%] w-[200%] h-[200%] bg-[conic-gradient(from_0deg,transparent_0_340deg,#06b6d4_360deg)] animate-spin-slow mix-blend-color-dodge filter blur-[25px] opacity-60"></div>
-      <div class="absolute top-[-50%] left-[-50%] w-[200%] h-[200%] bg-[conic-gradient(from_180deg,transparent_0_340deg,#3b82f6_360deg)] animate-reverse-spin mix-blend-color-dodge filter blur-[25px] opacity-60"></div>
+    <div
+      class="absolute top-[-50%] left-[-50%] w-[200%] h-[200%] bg-[conic-gradient(from_0deg,transparent_0_340deg,#06b6d4_360deg)] animate-spin-slow mix-blend-color-dodge filter blur-[25px] opacity-60">
+    </div>
+    <div
+      class="absolute top-[-50%] left-[-50%] w-[200%] h-[200%] bg-[conic-gradient(from_180deg,transparent_0_340deg,#3b82f6_360deg)] animate-reverse-spin mix-blend-color-dodge filter blur-[25px] opacity-60">
+    </div>
   </div>
 
   <div class="relative z-10 p-6 lg:p-8">
     <div class="container mx-auto max-w-4xl">
       <div class="flex items-center mb-8">
         <button (click)="backToPricing()" class="p-2 rounded-full hover:bg-gray-700/50 transition mr-4">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-300" fill="none" viewBox="0 0 24 24"
+            stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
           </svg>
         </button>
@@ -19,7 +24,8 @@
       <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
         <!-- Order Summary -->
         <div class="lg:col-span-2 glass-content p-6 h-fit">
-          <h3 class="text-xl font-semibold text-cyan-400 border-b border-gray-700 pb-4 mb-6">{{ 'order_summary' | translate }}</h3>
+          <h3 class="text-xl font-semibold text-cyan-400 border-b border-gray-700 pb-4 mb-6">{{ 'order_summary' |
+            translate }}</h3>
           <div class="space-y-4">
             <div class="flex justify-between items-center text-sm">
               <span class="text-gray-400">{{ 'upgrading_from' | translate }}</span>
@@ -31,7 +37,8 @@
             </div>
             <div class="flex justify-between items-center">
               <span class="text-gray-400">{{ 'billing_cycle' | translate }}</span>
-              <span class="font-semibold text-white">{{ billingCycle() === 'monthly' ? ('monthly' | translate) : ('yearly' | translate) }}</span>
+              <span class="font-semibold text-white">{{ billingCycle() === 'monthly' ? ('monthly' | translate) :
+                ('yearly' | translate) }}</span>
             </div>
             <div class="border-t border-gray-700 my-4"></div>
             <div class="flex justify-between items-center text-lg">
@@ -43,61 +50,169 @@
 
         <!-- Payment Methods -->
         <div class="lg:col-span-3 glass-content p-6">
-          <h3 class="text-xl font-semibold text-cyan-400 border-b border-gray-700 pb-4 mb-6">{{ 'select_payment_method' | translate }}</h3>
+          <h3 class="text-xl font-semibold text-cyan-400 border-b border-gray-700 pb-4 mb-6">{{ 'select_payment_method'
+            | translate }}</h3>
           <div class="space-y-4">
             @if (settings().enableCreditCard) {
-              <div (click)="selectPaymentMethod('credit-card')"
-                   class="p-4 border rounded-lg cursor-pointer transition"
-                   [class]="selectedPaymentMethod() === 'credit-card' ? 'border-cyan-500 bg-cyan-900/20' : 'border-gray-600 hover:border-gray-500'">
-                <div class="flex items-center">
-                  <input type="radio" name="payment-method" class="h-4 w-4 text-cyan-600 bg-gray-700 border-gray-500 focus:ring-cyan-500" [checked]="selectedPaymentMethod() === 'credit-card'">
-                  <label class="ml-3 block text-sm font-medium text-white">{{ 'credit_card' | translate }}</label>
-                </div>
-                <p class="text-gray-400 text-sm mt-2 ml-7">{{ 'credit_card_desc' | translate }}</p>
+            <div (click)="selectPaymentMethod('credit-card')" class="p-4 border rounded-lg cursor-pointer transition"
+              [class]="selectedPaymentMethod() === 'credit-card' ? 'border-cyan-500 bg-cyan-900/20' : 'border-gray-600 hover:border-gray-500'">
+              <div class="flex items-center">
+                <input type="radio" name="payment-method"
+                  class="h-4 w-4 text-cyan-600 bg-gray-700 border-gray-500 focus:ring-cyan-500"
+                  [checked]="selectedPaymentMethod() === 'credit-card'">
+                <label class="ml-3 block text-sm font-medium text-white">{{ 'credit_card' | translate }}</label>
               </div>
+              <p class="text-gray-400 text-sm mt-2 ml-7">{{ 'credit_card_desc' | translate }}</p>
+            </div>
             }
 
             @if (settings().enableCrypto) {
-               <div (click)="selectPaymentMethod('crypto-web3')"
-                   class="p-4 border rounded-lg cursor-pointer transition"
-                   [class]="selectedPaymentMethod() === 'crypto-web3' ? 'border-cyan-500 bg-cyan-900/20' : 'border-gray-600 hover:border-gray-500'">
-                <div class="flex items-center">
-                  <input type="radio" name="payment-method" class="h-4 w-4 text-cyan-600 bg-gray-700 border-gray-500 focus:ring-cyan-500" [checked]="selectedPaymentMethod() === 'crypto-web3'">
-                  <label class="ml-3 block text-sm font-medium text-white">{{ 'crypto_web3' | translate }}</label>
-                </div>
-                 <p class="text-gray-400 text-sm mt-2 ml-7">{{ 'crypto_web3_desc' | translate }}</p>
+            <div (click)="selectPaymentMethod('crypto-web3')" class="p-4 border rounded-lg cursor-pointer transition"
+              [class]="selectedPaymentMethod() === 'crypto-web3' ? 'border-cyan-500 bg-cyan-900/20' : 'border-gray-600 hover:border-gray-500'">
+              <div class="flex items-center">
+                <input type="radio" name="payment-method"
+                  class="h-4 w-4 text-cyan-600 bg-gray-700 border-gray-500 focus:ring-cyan-500"
+                  [checked]="selectedPaymentMethod() === 'crypto-web3'">
+                <label class="ml-3 block text-sm font-medium text-white">{{ 'crypto_web3' | translate }}</label>
               </div>
-               <div (click)="selectPaymentMethod('crypto-gatepay')"
-                   class="p-4 border rounded-lg cursor-pointer transition"
-                   [class]="selectedPaymentMethod() === 'crypto-gatepay' ? 'border-cyan-500 bg-cyan-900/20' : 'border-gray-600 hover:border-gray-500'">
-                <div class="flex items-center">
-                  <input type="radio" name="payment-method" class="h-4 w-4 text-cyan-600 bg-gray-700 border-gray-500 focus:ring-cyan-500" [checked]="selectedPaymentMethod() === 'crypto-gatepay'">
-                  <label class="ml-3 block text-sm font-medium text-white">{{ 'crypto_gatepay' | translate }}</label>
-                </div>
-                 <p class="text-gray-400 text-sm mt-2 ml-7">{{ 'crypto_gatepay_desc' | translate }}</p>
+              <p class="text-gray-400 text-sm mt-2 ml-7">{{ 'crypto_web3_desc' | translate }}</p>
+            </div>
+            <div (click)="selectPaymentMethod('crypto-gatepay')" class="p-4 border rounded-lg cursor-pointer transition"
+              [class]="selectedPaymentMethod() === 'crypto-gatepay' ? 'border-cyan-500 bg-cyan-900/20' : 'border-gray-600 hover:border-gray-500'">
+              <div class="flex items-center">
+                <input type="radio" name="payment-method"
+                  class="h-4 w-4 text-cyan-600 bg-gray-700 border-gray-500 focus:ring-cyan-500"
+                  [checked]="selectedPaymentMethod() === 'crypto-gatepay'">
+                <label class="ml-3 block text-sm font-medium text-white">{{ 'crypto_gatepay' | translate }}</label>
               </div>
+              <p class="text-gray-400 text-sm mt-2 ml-7">{{ 'crypto_gatepay_desc' | translate }}</p>
+            </div>
+            }
+
+            <!-- PIX Payment -->
+            @if (settings().enablePix) {
+            <div (click)="selectPaymentMethod('pix')" class="p-4 border rounded-lg cursor-pointer transition"
+              [class]="selectedPaymentMethod() === 'pix' ? 'border-cyan-500 bg-cyan-900/20' : 'border-gray-600 hover:border-gray-500'">
+              <div class="flex items-center">
+                <input type="radio" name="payment-method"
+                  class="h-4 w-4 text-cyan-600 bg-gray-700 border-gray-500 focus:ring-cyan-500"
+                  [checked]="selectedPaymentMethod() === 'pix'">
+                <label class="ml-3 block text-sm font-medium text-white">{{ 'pix_payment' | translate }}</label>
+                <span
+                  class="ml-2 px-2 py-0.5 text-xs font-semibold bg-green-500/20 text-green-400 rounded-full">🇧🇷</span>
+              </div>
+              <p class="text-gray-400 text-sm mt-2 ml-7">{{ 'pix_payment_desc' | translate }}</p>
+
+              @if (selectedPaymentMethod() === 'pix') {
+              <div class="mt-4 ml-7 p-4 bg-white/5 rounded-lg border border-white/10">
+                <div class="text-center">
+                  <div class="inline-block p-4 bg-white rounded-lg mb-3">
+                    <svg class="h-24 w-24" viewBox="0 0 100 100">
+                      <rect width="100" height="100" fill="white" />
+                      <text x="50" y="55" text-anchor="middle" font-size="10" fill="black">QR PIX</text>
+                    </svg>
+                  </div>
+                  <p class="text-xs text-gray-400 mb-3">{{ 'pix_scan_or_copy' | translate }}</p>
+                </div>
+                <div class="flex items-center gap-2">
+                  <input type="text" readonly [value]="settings().pixKey"
+                    class="flex-1 px-3 py-2 text-sm bg-black/40 border border-white/10 rounded-lg text-gray-300" />
+                  <button (click)="copyPixKey(); $event.stopPropagation()"
+                    class="px-3 py-2 text-sm font-medium rounded-lg transition"
+                    [class]="pixKeyCopied() ? 'bg-green-500/20 text-green-400' : 'bg-cyan-500/20 text-cyan-400 hover:bg-cyan-500/30'">
+                    @if (pixKeyCopied()) {
+                    ✓ {{ 'copied' | translate }}
+                    } @else {
+                    {{ 'copy' | translate }}
+                    }
+                  </button>
+                </div>
+              </div>
+              }
+            </div>
+            }
+
+            <!-- Bank Transfer -->
+            @if (settings().enableBankTransfer) {
+            <div (click)="selectPaymentMethod('bank-transfer-br')"
+              class="p-4 border rounded-lg cursor-pointer transition"
+              [class]="selectedPaymentMethod() === 'bank-transfer-br' ? 'border-cyan-500 bg-cyan-900/20' : 'border-gray-600 hover:border-gray-500'">
+              <div class="flex items-center">
+                <input type="radio" name="payment-method"
+                  class="h-4 w-4 text-cyan-600 bg-gray-700 border-gray-500 focus:ring-cyan-500"
+                  [checked]="selectedPaymentMethod() === 'bank-transfer-br'">
+                <label class="ml-3 block text-sm font-medium text-white">{{ 'bank_transfer_br' | translate }}</label>
+                <span
+                  class="ml-2 px-2 py-0.5 text-xs font-semibold bg-yellow-500/20 text-yellow-400 rounded-full">🇧🇷</span>
+              </div>
+              <p class="text-gray-400 text-sm mt-2 ml-7">{{ 'bank_transfer_br_desc' | translate }}</p>
+
+              @if (selectedPaymentMethod() === 'bank-transfer-br') {
+              <div class="mt-4 ml-7 p-4 bg-white/5 rounded-lg border border-white/10 space-y-2 text-sm">
+                <div class="flex justify-between"><span class="text-gray-400">{{ 'bank_name' | translate }}:</span><span
+                    class="text-white">{{ settings().bankAccountBR.bankName }}</span></div>
+                <div class="flex justify-between"><span class="text-gray-400">{{ 'agency' | translate }}:</span><span
+                    class="text-white">{{ settings().bankAccountBR.agency }}</span></div>
+                <div class="flex justify-between"><span class="text-gray-400">{{ 'account' | translate }}:</span><span
+                    class="text-white">{{ settings().bankAccountBR.account }}</span></div>
+                <div class="flex justify-between"><span class="text-gray-400">{{ 'cnpj' | translate }}:</span><span
+                    class="text-white">{{ settings().bankAccountBR.cnpj }}</span></div>
+                <div class="flex justify-between"><span class="text-gray-400">{{ 'beneficiary' | translate
+                    }}:</span><span class="text-white">{{ settings().bankAccountBR.beneficiary }}</span></div>
+              </div>
+              }
+            </div>
+
+            <div (click)="selectPaymentMethod('bank-transfer-intl')"
+              class="p-4 border rounded-lg cursor-pointer transition"
+              [class]="selectedPaymentMethod() === 'bank-transfer-intl' ? 'border-cyan-500 bg-cyan-900/20' : 'border-gray-600 hover:border-gray-500'">
+              <div class="flex items-center">
+                <input type="radio" name="payment-method"
+                  class="h-4 w-4 text-cyan-600 bg-gray-700 border-gray-500 focus:ring-cyan-500"
+                  [checked]="selectedPaymentMethod() === 'bank-transfer-intl'">
+                <label class="ml-3 block text-sm font-medium text-white">{{ 'bank_transfer_intl' | translate }}</label>
+                <span class="ml-2 px-2 py-0.5 text-xs font-semibold bg-blue-500/20 text-blue-400 rounded-full">🌍</span>
+              </div>
+              <p class="text-gray-400 text-sm mt-2 ml-7">{{ 'bank_transfer_intl_desc' | translate }}</p>
+
+              @if (selectedPaymentMethod() === 'bank-transfer-intl') {
+              <div class="mt-4 ml-7 p-4 bg-white/5 rounded-lg border border-white/10 space-y-2 text-sm">
+                <div class="flex justify-between"><span class="text-gray-400">{{ 'bank_name' | translate }}:</span><span
+                    class="text-white">{{ settings().bankAccountIntl.bankName }}</span></div>
+                <div class="flex justify-between"><span class="text-gray-400">{{ 'swift_bic' | translate }}:</span><span
+                    class="text-white">{{ settings().bankAccountIntl.swift }}</span></div>
+                <div class="flex justify-between"><span class="text-gray-400">{{ 'iban' | translate }}:</span><span
+                    class="text-white">{{ settings().bankAccountIntl.iban }}</span></div>
+                <div class="flex justify-between"><span class="text-gray-400">{{ 'address' | translate }}:</span><span
+                    class="text-white text-right max-w-[200px]">{{ settings().bankAccountIntl.address }}</span></div>
+                <div class="flex justify-between"><span class="text-gray-400">{{ 'beneficiary' | translate
+                    }}:</span><span class="text-white">{{ settings().bankAccountIntl.beneficiary }}</span></div>
+              </div>
+              }
+            </div>
             }
           </div>
 
           @if (paymentError()) {
-            <div class="mt-6 bg-red-500/10 border border-red-500/30 text-red-300 p-3 rounded-lg text-sm">
-                {{ paymentError() }}
-            </div>
+          <div class="mt-6 bg-red-500/10 border border-red-500/30 text-red-300 p-3 rounded-lg text-sm">
+            {{ paymentError() }}
+          </div>
           }
 
           <div class="mt-8">
-            <button 
-              (click)="processPayment()"
-              [disabled]="!selectedPaymentMethod() || isLoading()"
+            <button (click)="processPayment()" [disabled]="!selectedPaymentMethod() || isLoading()"
               class="w-full px-6 py-3 text-white font-semibold rounded-xl btn-primary-gradient transition disabled:opacity-50 disabled:cursor-not-allowed disabled:box-shadow-none flex items-center justify-center">
               @if (isLoading()) {
-                <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                {{ 'processing_payment' | translate }}
+              <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
+                viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                </path>
+              </svg>
+              {{ 'processing_payment' | translate }}
               } @else {
-                {{ 'complete_purchase' | translate }}
+              {{ 'complete_purchase' | translate }}
               }
             </button>
           </div>

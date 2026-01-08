@@ -488,6 +488,32 @@ const TRANSLATIONS: Record<Language, Record<string, string>> = {
     processing_payment: 'Processing...',
     complete_purchase: 'Complete Purchase',
 
+    // PIX and Bank Transfer
+    pix_payment: 'PIX (Instant Payment)',
+    pix_payment_desc: 'Pay instantly with Brazilian PIX.',
+    pix_scan_or_copy: 'Scan the QR code or copy the PIX key below',
+    bank_transfer_br: 'Bank Transfer (Brazil)',
+    bank_transfer_br_desc: 'Transfer to a Brazilian bank account.',
+    bank_transfer_intl: 'Bank Transfer (International)',
+    bank_transfer_intl_desc: 'SWIFT/IBAN international transfer.',
+    bank_name: 'Bank',
+    agency: 'Agency',
+    account: 'Account',
+    cnpj: 'CNPJ',
+    beneficiary: 'Beneficiary',
+    swift_bic: 'SWIFT/BIC',
+    iban: 'IBAN',
+    copy: 'Copy',
+    copied: 'Copied',
+
+    // Proration
+    upgrade_proration_message: 'You will be charged {amount} now (prorated for {days} remaining days).',
+    downgrade_effective_date: 'Your current plan remains active until {endDate}.',
+    downgrade_no_refund_info: 'No refund will be issued. Your new plan takes effect on {endDate}.',
+    notification_downgrade_scheduled_title: 'Downgrade Scheduled',
+    notification_downgrade_scheduled_body: 'Your plan will change to {planName} on {endDate}.',
+    days_remaining_in_cycle: '{days} days remaining',
+
     // Admin Page
     admin_dashboard: 'Admin Dashboard',
     general_settings: 'General Settings',
@@ -990,6 +1016,32 @@ const TRANSLATIONS: Record<Language, Record<string, string>> = {
     processing_payment: 'Processando...',
     complete_purchase: 'Finalizar Compra',
 
+    // PIX and Bank Transfer
+    pix_payment: 'PIX (Pagamento Instantâneo)',
+    pix_payment_desc: 'Pague instantaneamente com PIX.',
+    pix_scan_or_copy: 'Escaneie o QR code ou copie a chave PIX abaixo',
+    bank_transfer_br: 'Transferência Bancária (Brasil)',
+    bank_transfer_br_desc: 'Transfira para uma conta bancária brasileira.',
+    bank_transfer_intl: 'Transferência Bancária (Internacional)',
+    bank_transfer_intl_desc: 'Transferência internacional SWIFT/IBAN.',
+    bank_name: 'Banco',
+    agency: 'Agência',
+    account: 'Conta',
+    cnpj: 'CNPJ',
+    beneficiary: 'Beneficiário',
+    swift_bic: 'SWIFT/BIC',
+    iban: 'IBAN',
+    copy: 'Copiar',
+    copied: 'Copiado',
+
+    // Proration
+    upgrade_proration_message: 'Você será cobrado {amount} agora (proporcional aos {days} dias restantes).',
+    downgrade_effective_date: 'Seu plano atual permanece ativo até {endDate}.',
+    downgrade_no_refund_info: 'Nenhum reembolso será emitido. Seu novo plano entra em vigor em {endDate}.',
+    notification_downgrade_scheduled_title: 'Downgrade Agendado',
+    notification_downgrade_scheduled_body: 'Seu plano mudará para {planName} em {endDate}.',
+    days_remaining_in_cycle: '{days} dias restantes',
+
     // Admin Page
     admin_dashboard: 'Painel do Administrador',
     general_settings: 'Configurações Gerais',
@@ -1491,6 +1543,32 @@ const TRANSLATIONS: Record<Language, Record<string, string>> = {
     crypto_gatepay_desc: 'Paga a través de tu cuenta de Gate.io.',
     processing_payment: 'Procesando...',
     complete_purchase: 'Completar Compra',
+
+    // PIX and Bank Transfer
+    pix_payment: 'PIX (Pago Instantáneo)',
+    pix_payment_desc: 'Paga instantáneamente con PIX brasileño.',
+    pix_scan_or_copy: 'Escanea el código QR o copia la clave PIX abajo',
+    bank_transfer_br: 'Transferencia Bancaria (Brasil)',
+    bank_transfer_br_desc: 'Transfiere a una cuenta bancaria brasileña.',
+    bank_transfer_intl: 'Transferencia Bancaria (Internacional)',
+    bank_transfer_intl_desc: 'Transferencia internacional SWIFT/IBAN.',
+    bank_name: 'Banco',
+    agency: 'Agencia',
+    account: 'Cuenta',
+    cnpj: 'CNPJ',
+    beneficiary: 'Beneficiario',
+    swift_bic: 'SWIFT/BIC',
+    iban: 'IBAN',
+    copy: 'Copiar',
+    copied: 'Copiado',
+
+    // Proration
+    upgrade_proration_message: 'Se te cobrará {amount} ahora (prorrateado por {days} días restantes).',
+    downgrade_effective_date: 'Tu plan actual permanece activo hasta {endDate}.',
+    downgrade_no_refund_info: 'No se emitirá reembolso. Tu nuevo plan entra en vigor el {endDate}.',
+    notification_downgrade_scheduled_title: 'Cambio de Plan Programado',
+    notification_downgrade_scheduled_body: 'Tu plan cambiará a {planName} el {endDate}.',
+    days_remaining_in_cycle: '{days} días restantes',
 
     // Admin Page
     admin_dashboard: 'Panel de Administrador',

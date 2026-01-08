@@ -1,53 +1,106 @@
-<div class="min-h-screen w-full flex items-center justify-center relative overflow-hidden bg-[#020617] text-white py-12 px-4 sm:px-6 lg:px-8">
-  
+<div
+  class="min-h-screen w-full flex items-center justify-center relative overflow-hidden bg-[#020617] text-white py-12 px-4 sm:px-6 lg:px-8">
+
   <!-- Electric/Fintech Background (Pure Energy) -->
   <div class="absolute inset-0 w-full h-full overflow-hidden pointer-events-none">
-      <!-- Electric Current Beams (Vivid, No Opacity) -->
-      <!-- Beam 1: Cyan Electric -->
-      <div class="absolute top-[-50%] left-[-50%] w-[200%] h-[200%] bg-[conic-gradient(from_0deg,transparent_0_340deg,#06b6d4_360deg)] animate-spin-slow mix-blend-color-dodge filter blur-[25px]"></div>
-      
-      <!-- Beam 2: Deep Blue Electric -->
-      <div class="absolute top-[-50%] left-[-50%] w-[200%] h-[200%] bg-[conic-gradient(from_180deg,transparent_0_340deg,#3b82f6_360deg)] animate-reverse-spin mix-blend-color-dodge filter blur-[25px]"></div>
+    <!-- Electric Current Beams (Vivid, No Opacity) -->
+    <!-- Beam 1: Cyan Electric -->
+    <div
+      class="absolute top-[-50%] left-[-50%] w-[200%] h-[200%] bg-[conic-gradient(from_0deg,transparent_0_340deg,#06b6d4_360deg)] animate-spin-slow mix-blend-color-dodge filter blur-[25px]">
+    </div>
 
-      <!-- Sharp Sparks -->
-      <div class="absolute top-[20%] left-[10%] w-32 h-0.5 bg-cyan-400 animate-pulse-fast rotate-45 shadow-[0_0_15px_#22d3ee]"></div>
-      <div class="absolute bottom-[30%] right-[10%] w-48 h-0.5 bg-blue-500 animate-pulse-fast delay-700 -rotate-12 shadow-[0_0_15px_#3b82f6]"></div>
+    <!-- Beam 2: Deep Blue Electric -->
+    <div
+      class="absolute top-[-50%] left-[-50%] w-[200%] h-[200%] bg-[conic-gradient(from_180deg,transparent_0_340deg,#3b82f6_360deg)] animate-reverse-spin mix-blend-color-dodge filter blur-[25px]">
+    </div>
+
+    <!-- Sharp Sparks -->
+    <div
+      class="absolute top-[20%] left-[10%] w-32 h-0.5 bg-cyan-400 animate-pulse-fast rotate-45 shadow-[0_0_15px_#22d3ee]">
+    </div>
+    <div
+      class="absolute bottom-[30%] right-[10%] w-48 h-0.5 bg-blue-500 animate-pulse-fast delay-700 -rotate-12 shadow-[0_0_15px_#3b82f6]">
+    </div>
+  </div>
+
+  <!-- Language Selector -->
+  <div class="absolute top-4 right-4 z-20">
+    <div class="relative">
+      <button (click)="showLanguageMenu.set(!showLanguageMenu())"
+        class="flex items-center gap-2 px-3 py-2 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 transition text-sm">
+        @switch (currentLang()) {
+        @case ('en') { <span>🇺🇸</span> }
+        @case ('pt') { <span>🇧🇷</span> }
+        @case ('es') { <span>🇪🇸</span> }
+        }
+        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+
+      @if (showLanguageMenu()) {
+      <div class="absolute right-0 mt-2 w-40 bg-[#0A0F1A] border border-white/10 rounded-xl shadow-xl py-1 z-30">
+        <button (click)="setLanguage('en')"
+          class="w-full px-4 py-2 text-sm text-left flex items-center gap-3 hover:bg-white/10 transition"
+          [class.text-cyan-400]="currentLang() === 'en'" [class.text-gray-300]="currentLang() !== 'en'">
+          <span>🇺🇸</span> English
+        </button>
+        <button (click)="setLanguage('pt')"
+          class="w-full px-4 py-2 text-sm text-left flex items-center gap-3 hover:bg-white/10 transition"
+          [class.text-cyan-400]="currentLang() === 'pt'" [class.text-gray-300]="currentLang() !== 'pt'">
+          <span>🇧🇷</span> Português
+        </button>
+        <button (click)="setLanguage('es')"
+          class="w-full px-4 py-2 text-sm text-left flex items-center gap-3 hover:bg-white/10 transition"
+          [class.text-cyan-400]="currentLang() === 'es'" [class.text-gray-300]="currentLang() !== 'es'">
+          <span>🇪🇸</span> Español
+        </button>
+      </div>
+      }
+    </div>
   </div>
 
   <!-- Signup Card Container -->
   <!-- ADDED: overflow-hidden to mask the aura within the rounded corners -->
-  <div class="relative z-10 w-full max-w-md p-8 glass-card backdrop-blur-xl bg-white/5 border border-white/10 shadow-2xl rounded-2xl overflow-hidden">
-    
+  <div
+    class="relative z-10 w-full max-w-md p-8 glass-card backdrop-blur-xl bg-white/5 border border-white/10 shadow-2xl rounded-2xl overflow-hidden">
+
     <!-- Branding (Unified Element - Zero Gap) -->
     <div class="flex flex-col items-center justify-center mb-12 text-center w-full">
       <!-- Logo Container: Zero bottom margin -->
       <div class="relative z-10 flex justify-center mb-0 leading-none">
-        
+
         <!-- HIGH-TECH AURA (Behind Logo) - Enhanced for Visibility & Responsiveness -->
         <!-- Adjusted sizing for tighter framing: w-[180px]/[220px] -->
-        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[180px] h-[180px] sm:w-[220px] sm:h-[220px] pointer-events-none -z-10 flex items-center justify-center">
-            <!-- Core Glow (Intense Pulse) - Reduced blur -->
-            <div class="absolute w-[50%] h-[50%] bg-cyan-500/30 rounded-full blur-[40px] animate-pulse-slow"></div>
-            
-            <!-- Tech Ring 1 (Cyan, Outer, Spinning) - Increased Border/Opacity -->
-            <div class="absolute w-[80%] h-[80%] rounded-full border-[2px] border-cyan-500/40 border-t-cyan-300 border-r-transparent border-b-cyan-500/40 border-l-transparent animate-spin-slow shadow-[0_0_20px_rgba(6,182,212,0.3)]"></div>
-            
-            <!-- Tech Ring 2 (Blue, Inner, Reverse Spinning) -->
-            <div class="absolute w-[65%] h-[65%] rounded-full border-[1px] border-blue-500/30 border-t-transparent border-r-blue-400 border-b-transparent border-l-blue-500/30 animate-reverse-spin"></div>
-            
-            <!-- Static Definition Ring -->
-            <div class="absolute w-[90%] h-[90%] rounded-full border border-white/10 opacity-60"></div>
+        <div
+          class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[180px] h-[180px] sm:w-[220px] sm:h-[220px] pointer-events-none -z-10 flex items-center justify-center">
+          <!-- Core Glow (Intense Pulse) - Reduced blur -->
+          <div class="absolute w-[50%] h-[50%] bg-cyan-500/30 rounded-full blur-[40px] animate-pulse-slow"></div>
+
+          <!-- Tech Ring 1 (Cyan, Outer, Spinning) - Increased Border/Opacity -->
+          <div
+            class="absolute w-[80%] h-[80%] rounded-full border-[2px] border-cyan-500/40 border-t-cyan-300 border-r-transparent border-b-cyan-500/40 border-l-transparent animate-spin-slow shadow-[0_0_20px_rgba(6,182,212,0.3)]">
+          </div>
+
+          <!-- Tech Ring 2 (Blue, Inner, Reverse Spinning) -->
+          <div
+            class="absolute w-[65%] h-[65%] rounded-full border-[1px] border-blue-500/30 border-t-transparent border-r-blue-400 border-b-transparent border-l-blue-500/30 animate-reverse-spin">
+          </div>
+
+          <!-- Static Definition Ring -->
+          <div class="absolute w-[90%] h-[90%] rounded-full border border-white/10 opacity-60"></div>
         </div>
 
         @if (settings().appLogoUrl) {
-            <img [src]="settings().appLogoUrl" 
-                 class="relative h-48 sm:h-60 lg:h-48 w-auto object-contain filter drop-shadow-[0_0_20px_rgba(6,182,212,0.3)] brightness-110 contrast-125 -ml-5 animate-neon-pulse" 
-                 [alt]="settings().appName + ' logo'">
+        <img [src]="settings().appLogoUrl"
+          class="relative h-48 sm:h-60 lg:h-48 w-auto object-contain filter drop-shadow-[0_0_20px_rgba(6,182,212,0.3)] brightness-110 contrast-125 -ml-5 animate-neon-pulse"
+          [alt]="settings().appName + ' logo'">
         }
       </div>
-      
+
       <!-- Neon Slogan -->
-      <p class="relative z-20 text-center font-bold text-[9px] tracking-[0.35em] uppercase leading-none text-cyan-400 drop-shadow-[0_0_8px_rgba(34,211,238,1)] -mt-8 w-full">
+      <p
+        class="relative z-20 text-center font-bold text-[9px] tracking-[0.35em] uppercase leading-none text-cyan-400 drop-shadow-[0_0_8px_rgba(34,211,238,1)] -mt-8 w-full">
         {{ 'slogan' | translate }}
       </p>
     </div>
@@ -62,70 +115,73 @@
 
     <form class="space-y-5" [formGroup]="signupForm" (ngSubmit)="signup()">
       @if (signupFailed()) {
-        <div class="bg-red-500/10 border border-red-500/30 text-red-400 p-3 rounded-lg text-sm flex items-center justify-center shadow-[0_0_10px_rgba(239,68,68,0.2)]">
-          <svg class="w-4 h-4 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-          {{ 'signup_failed' | translate }}
-        </div>
+      <div
+        class="bg-red-500/10 border border-red-500/30 text-red-400 p-3 rounded-lg text-sm flex items-center justify-center shadow-[0_0_10px_rgba(239,68,68,0.2)]">
+        <svg class="w-4 h-4 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        {{ 'signup_failed' | translate }}
+      </div>
       }
-      
+
       <div class="space-y-4">
-         <div>
+        <div>
           <label for="name" class="sr-only">{{ 'full_name' | translate }}</label>
           <div class="relative group">
-             <input id="name" type="text" formControlName="name" autocomplete="name" required
-                 class="block w-full px-4 py-3 border border-white/10 rounded-xl leading-5 bg-black/40 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500/50 transition-all hover:bg-black/50"
-                 [placeholder]="'full_name' | translate"
-                 [class.border-red-500]="name?.invalid && name?.touched">
+            <input id="name" type="text" formControlName="name" autocomplete="name" required
+              class="block w-full px-4 py-3 border border-white/10 rounded-xl leading-5 bg-black/40 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500/50 transition-all hover:bg-black/50"
+              [placeholder]="'full_name' | translate" [class.border-red-500]="name?.invalid && name?.touched">
           </div>
           @if (name?.invalid && name?.touched) {
-            <div class="text-red-400 text-xs mt-1 ml-1">
-              @if (name?.errors?.['required']) { <span>{{ 'required_field' | translate }}</span> }
-            </div>
+          <div class="text-red-400 text-xs mt-1 ml-1">
+            @if (name?.errors?.['required']) { <span>{{ 'required_field' | translate }}</span> }
+          </div>
           }
         </div>
         <div>
           <label for="email" class="sr-only">{{ 'email_address' | translate }}</label>
           <div class="relative group">
-             <input id="email" type="email" formControlName="email" autocomplete="email" required
-                 class="block w-full px-4 py-3 border border-white/10 rounded-xl leading-5 bg-black/40 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500/50 transition-all hover:bg-black/50"
-                 [placeholder]="'email_address' | translate"
-                 [class.border-red-500]="email?.invalid && email?.touched">
+            <input id="email" type="email" formControlName="email" autocomplete="email" required
+              class="block w-full px-4 py-3 border border-white/10 rounded-xl leading-5 bg-black/40 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500/50 transition-all hover:bg-black/50"
+              [placeholder]="'email_address' | translate" [class.border-red-500]="email?.invalid && email?.touched">
           </div>
           @if (email?.invalid && email?.touched) {
-            <div class="text-red-400 text-xs mt-1 ml-1">
-              @if (email?.errors?.['required']) { <span>{{ 'required_field' | translate }}</span> }
-              @if (email?.errors?.['email']) { <span>{{ 'invalid_email' | translate }}</span> }
-            </div>
+          <div class="text-red-400 text-xs mt-1 ml-1">
+            @if (email?.errors?.['required']) { <span>{{ 'required_field' | translate }}</span> }
+            @if (email?.errors?.['email']) { <span>{{ 'invalid_email' | translate }}</span> }
+          </div>
           }
         </div>
         <div>
           <label for="password" class="sr-only">{{ 'password' | translate }}</label>
           <div class="relative group">
-             <input id="password" type="password" formControlName="password" autocomplete="new-password" required
-                 class="block w-full px-4 py-3 border border-white/10 rounded-xl leading-5 bg-black/40 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500/50 transition-all hover:bg-black/50"
-                 [placeholder]="'password' | translate"
-                 [class.border-red-500]="password?.invalid && password?.touched">
+            <input id="password" type="password" formControlName="password" autocomplete="new-password" required
+              class="block w-full px-4 py-3 border border-white/10 rounded-xl leading-5 bg-black/40 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500/50 transition-all hover:bg-black/50"
+              [placeholder]="'password' | translate" [class.border-red-500]="password?.invalid && password?.touched">
           </div>
           @if (password?.invalid && password?.touched) {
-            <div class="text-red-400 text-xs mt-1 ml-1">
-              @if (password?.errors?.['required']) { <span>{{ 'required_field' | translate }}</span> }
-              @if (password?.errors?.['minlength']) { <span>{{ 'password_min_length' | translate }}</span> }
-            </div>
+          <div class="text-red-400 text-xs mt-1 ml-1">
+            @if (password?.errors?.['required']) { <span>{{ 'required_field' | translate }}</span> }
+            @if (password?.errors?.['minlength']) { <span>{{ 'password_min_length' | translate }}</span> }
+          </div>
           }
         </div>
       </div>
 
       <div class="pt-2">
         <button type="submit" [disabled]="signupForm.invalid"
-                class="w-full flex justify-center py-3.5 px-4 border border-transparent rounded-xl shadow-[0_0_20px_rgba(6,182,212,0.4)] text-sm font-bold text-white bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#0A0F1A] focus:ring-cyan-500 transition-all duration-300 transform hover:-translate-y-0.5 hover:shadow-[0_0_25px_rgba(6,182,212,0.6)]">
+          class="w-full flex justify-center py-3.5 px-4 border border-transparent rounded-xl shadow-[0_0_20px_rgba(6,182,212,0.4)] text-sm font-bold text-white bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#0A0F1A] focus:ring-cyan-500 transition-all duration-300 transform hover:-translate-y-0.5 hover:shadow-[0_0_25px_rgba(6,182,212,0.6)]">
           {{ 'signup' | translate }}
         </button>
       </div>
     </form>
-    
+
     <p class="text-center text-sm text-gray-500 mt-8">
       {{ 'already_have_account' | translate }}
-      <a routerLink="/login" class="font-medium text-cyan-400 hover:text-cyan-300 transition-colors ml-1 hover:underline">{{ 'login' | translate }}</a>
+      <a routerLink="/login"
+        class="font-medium text-cyan-400 hover:text-cyan-300 transition-colors ml-1 hover:underline">{{ 'login' |
+        translate }}</a>
     </p>
   </div>
 </div>

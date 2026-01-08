@@ -30,6 +30,11 @@ export class AuthService {
   private pendingLoginUser: { email: string; password?: string } | null = null;
   private pendingResetEmail: string | null = null;
 
+  // Billing cycle tracking for proration
+  billingCycleStart = signal<Date>(new Date());
+  billingCycle = signal<'monthly' | 'yearly'>('monthly');
+  scheduledDowngrade = signal<{ plan: SubscriptionPlan; effectiveDate: Date } | null>(null);
+
   // Mock Google users for the Google Auth modal
   private googleAuthUsers: GoogleAuthUser[] = [
     { name: 'Alex Johnson', email: 'alex.j@example.com', avatarUrl: 'https://i.pravatar.cc/150?u=alex.j@example.com' },
@@ -215,6 +220,46 @@ export class AuthService {
     this.user.update(u => u ? { ...u, subscriptionPlan: plan } : null);
     this.saveCurrentUser();
     this.updateUserInMasterList(this.user());
+  }
+
+  // Upgrade plan immediately and start new billing cycle
+  upgradePlan(plan: SubscriptionPlan, cycle: 'monthly' | 'yearly') {
+    this.billingCycleStart.set(new Date());
+    this.billingCycle.set(cycle);
+    this.scheduledDowngrade.set(null); // Cancel any scheduled downgrade
+    this.setSubscriptionPlan(plan);
+  }
+
+  // Schedule downgrade to take effect at end of current billing cycle
+  scheduleDowngrade(plan: SubscriptionPlan) {
+    const endDate = this.getBillingCycleEndDate();
+    this.scheduledDowngrade.set({ plan, effectiveDate: endDate });
+  }
+
+  // Get the end date of the current billing cycle
+  getBillingCycleEndDate(): Date {
+    const start = this.billingCycleStart();
+    const cycle = this.billingCycle();
+    const endDate = new Date(start);
+    if (cycle === 'monthly') {
+      endDate.setMonth(endDate.getMonth() + 1);
+    } else {
+      endDate.setFullYear(endDate.getFullYear() + 1);
+    }
+    return endDate;
+  }
+
+  // Calculate days remaining in current billing cycle
+  getDaysRemainingInCycle(): number {
+    const endDate = this.getBillingCycleEndDate();
+    const today = new Date();
+    const diffTime = endDate.getTime() - today.getTime();
+    return Math.max(0, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
+  }
+
+  // Get total days in current billing cycle
+  getTotalDaysInCycle(): number {
+    return this.billingCycle() === 'monthly' ? 30 : 365;
   }
 
   updateUserProfile(profileData: Partial<User>) {

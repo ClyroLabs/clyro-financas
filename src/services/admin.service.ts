@@ -13,6 +13,23 @@ export interface AdminSettings {
   checkoutLogoUrl: string;
   enableCreditCard: boolean;
   enableCrypto: boolean;
+  enablePix: boolean;
+  enableBankTransfer: boolean;
+  pixKey: string;
+  bankAccountBR: {
+    bankName: string;
+    agency: string;
+    account: string;
+    cnpj: string;
+    beneficiary: string;
+  };
+  bankAccountIntl: {
+    bankName: string;
+    swift: string;
+    iban: string;
+    address: string;
+    beneficiary: string;
+  };
   theme: ThemeMode;
 }
 
@@ -40,6 +57,23 @@ export class AdminService {
     checkoutLogoUrl: '/assets/logo.svg',
     enableCreditCard: true,
     enableCrypto: true,
+    enablePix: true,
+    enableBankTransfer: true,
+    pixKey: '12345678000199',
+    bankAccountBR: {
+      bankName: 'Banco do Brasil',
+      agency: '1234-5',
+      account: '12345-6',
+      cnpj: '12.345.678/0001-99',
+      beneficiary: 'Clyro Labs LTDA'
+    },
+    bankAccountIntl: {
+      bankName: 'Bank of America',
+      swift: 'BOFAUS3N',
+      iban: 'US12 3456 7890 1234 5678 90',
+      address: '100 North Tryon Street, Charlotte, NC 28255, USA',
+      beneficiary: 'Clyro Labs Inc.'
+    },
     theme: 'dark'
   });
 

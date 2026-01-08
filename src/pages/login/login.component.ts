@@ -3,6 +3,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
+import { TranslationService, Language } from '../../services/translation.service';
 import { TwoFactorAuthModalComponent } from '../../components/two-factor-auth-modal/two-factor-auth-modal.component';
 import { GoogleAuthModalComponent } from '../../components/google-auth-modal/google-auth-modal.component';
 import { AdminService } from '../../services/admin.service';
@@ -18,15 +19,23 @@ export class LoginComponent {
   private fb = inject(FormBuilder);
   authService = inject(AuthService);
   adminService = inject(AdminService);
+  translationService = inject(TranslationService);
   private router = inject(Router);
 
   loginFailed = signal(false);
   isLoading = signal(false);
   showGoogleModal = signal(false);
-  
+  showLanguageMenu = signal(false);
+
   settings = this.adminService.settings;
+  currentLang = this.translationService.currentLang;
   // Expose the signal from the service to the template
   requires2fa = this.authService.requires2fa;
+
+  setLanguage(lang: Language) {
+    this.translationService.setLanguage(lang);
+    this.showLanguageMenu.set(false);
+  }
 
   loginForm = this.fb.group({
     email: ['', [Validators.required, Validators.email]],

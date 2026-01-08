@@ -26,7 +26,7 @@ export class PricingComponent {
 
   billingCycle = signal<'monthly' | 'yearly'>('monthly');
   currentPlan = this.authService.subscriptionPlan;
-  
+
   prices = this.pricingService.prices;
 
   // Downgrade state
@@ -46,14 +46,33 @@ export class PricingComponent {
   downgradeMessageParams = computed(() => {
     const planKey = this.downgradeToPlan();
     if (!planKey) return {};
-    return { planName: this.translationService.translate()(planKey) };
+    const endDate = this.authService.getBillingCycleEndDate();
+    const formattedDate = endDate.toLocaleDateString();
+    return {
+      planName: this.translationService.translate()(planKey),
+      endDate: formattedDate
+    };
   });
 
   upgradeMessageParams = computed(() => {
     const planKey = this.upgradeToPlan();
     if (!planKey) return {};
-    return { planName: this.translationService.translate()(planKey) };
+    const daysRemaining = this.authService.getDaysRemainingInCycle();
+    return {
+      planName: this.translationService.translate()(planKey),
+      days: daysRemaining
+    };
   });
+
+  // Billing cycle info
+  billingCycleEndDate = computed(() => {
+    return this.authService.getBillingCycleEndDate().toLocaleDateString();
+  });
+
+  daysRemaining = computed(() => this.authService.getDaysRemainingInCycle());
+
+  // Scheduled downgrade info
+  scheduledDowngrade = this.authService.scheduledDowngrade;
 
   handlePlanSelection(targetPlan: 'basic' | 'premium') {
     if (this.planLevels[targetPlan] > this.planLevels[this.currentPlan()]) {
@@ -64,7 +83,7 @@ export class PricingComponent {
       this.openDowngradeModal(targetPlan);
     }
   }
-  
+
   openUpgradeModal(plan: 'basic' | 'premium') {
     this.upgradeToPlan.set(plan);
     this.showUpgradeModal.set(true);
@@ -87,20 +106,22 @@ export class PricingComponent {
     this.downgradeToPlan.set(plan);
     this.showDowngradeModal.set(true);
   }
-  
+
   confirmDowngrade() {
     this.isProcessingDowngrade.set(true);
-    
+
     setTimeout(() => {
       const plan = this.downgradeToPlan();
       if (plan) {
-        this.authService.setSubscriptionPlan(plan);
+        // Schedule downgrade for end of billing cycle instead of immediate change
+        this.authService.scheduleDowngrade(plan);
         const t = this.translationService.translate();
         const planName = t(plan);
+        const endDate = this.authService.getBillingCycleEndDate().toLocaleDateString();
         this.toastService.show({
-          titleKey: 'notification_downgrade_success_title',
-          messageKey: 'notification_downgrade_success_body',
-          params: { planName }
+          titleKey: 'notification_downgrade_scheduled_title',
+          messageKey: 'notification_downgrade_scheduled_body',
+          params: { planName, endDate }
         });
       }
       this.isProcessingDowngrade.set(false);
@@ -108,7 +129,7 @@ export class PricingComponent {
       this.downgradeToPlan.set(null);
     }, 1500);
   }
-  
+
   cancelDowngrade() {
     this.showDowngradeModal.set(false);
     this.downgradeToPlan.set(null);

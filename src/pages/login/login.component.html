@@ -23,6 +23,43 @@
     </div>
   </div>
 
+  <!-- Language Selector -->
+  <div class="absolute top-4 right-4 z-20">
+    <div class="relative">
+      <button (click)="showLanguageMenu.set(!showLanguageMenu())"
+        class="flex items-center gap-2 px-3 py-2 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 transition text-sm">
+        @switch (currentLang()) {
+        @case ('en') { <span>🇺🇸</span> }
+        @case ('pt') { <span>🇧🇷</span> }
+        @case ('es') { <span>🇪🇸</span> }
+        }
+        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+
+      @if (showLanguageMenu()) {
+      <div class="absolute right-0 mt-2 w-40 bg-[#0A0F1A] border border-white/10 rounded-xl shadow-xl py-1 z-30">
+        <button (click)="setLanguage('en')"
+          class="w-full px-4 py-2 text-sm text-left flex items-center gap-3 hover:bg-white/10 transition"
+          [class.text-cyan-400]="currentLang() === 'en'" [class.text-gray-300]="currentLang() !== 'en'">
+          <span>🇺🇸</span> English
+        </button>
+        <button (click)="setLanguage('pt')"
+          class="w-full px-4 py-2 text-sm text-left flex items-center gap-3 hover:bg-white/10 transition"
+          [class.text-cyan-400]="currentLang() === 'pt'" [class.text-gray-300]="currentLang() !== 'pt'">
+          <span>🇧🇷</span> Português
+        </button>
+        <button (click)="setLanguage('es')"
+          class="w-full px-4 py-2 text-sm text-left flex items-center gap-3 hover:bg-white/10 transition"
+          [class.text-cyan-400]="currentLang() === 'es'" [class.text-gray-300]="currentLang() !== 'es'">
+          <span>🇪🇸</span> Español
+        </button>
+      </div>
+      }
+    </div>
+  </div>
+
   <!-- Login Card Container -->
   <!-- ADDED: overflow-hidden to mask the aura within the rounded corners -->
   <div
@@ -178,19 +215,6 @@
           class="font-medium text-cyan-400 hover:text-cyan-300 transition-colors ml-1 hover:underline">{{ 'signup' |
           translate }}</a>
       </p>
-
-      <!-- Admin Access Link -->
-      <div class="pt-4 mt-4 border-t border-white/5">
-        <a routerLink="/admin"
-          class="flex items-center justify-center gap-2 text-xs text-gray-500 hover:text-cyan-400 transition-all group">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 group-hover:scale-110 transition-transform"
-            fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round"
-              d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
-          </svg>
-          {{ 'admin_access' | translate }}
-        </a>
-      </div>
     </div>
   </div>
 </div>

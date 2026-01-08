@@ -48,3 +48,5 @@ coverage/
 
 # Firebase
 .firebase/
+
+.vercel

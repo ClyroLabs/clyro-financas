@@ -11,7 +11,7 @@ import { GatePayService } from '../../services/gatepay.service';
 import { TranslationService } from '../../services/translation.service';
 import { ToastService } from '../../services/toast.service';
 
-type PaymentMethod = 'credit-card' | 'crypto-web3' | 'crypto-gatepay';
+type PaymentMethod = 'credit-card' | 'crypto-web3' | 'crypto-gatepay' | 'pix' | 'bank-transfer-br' | 'bank-transfer-intl';
 
 @Component({
   selector: 'app-checkout',
@@ -40,7 +40,10 @@ export class CheckoutComponent implements OnInit {
   selectedPaymentMethod = signal<PaymentMethod | null>(null);
   isLoading = signal(false);
   paymentError = signal<string | null>(null);
-  
+
+  // PIX state
+  pixKeyCopied = signal(false);
+
   settings = this.adminService.settings;
 
   planDisplayName = computed(() => {
@@ -53,23 +56,36 @@ export class CheckoutComponent implements OnInit {
     return p ? this.translationService.translate()(p) : '';
   });
 
+  // Proration info
+  daysRemaining = computed(() => this.authService.getDaysRemainingInCycle());
+  totalDaysInCycle = computed(() => this.authService.getTotalDaysInCycle());
+
+  proratedAmount = computed(() => {
+    const targetPlan = this.plan();
+    const currentSubPlan = this.currentPlan();
+    const cycle = this.billingCycle();
+
+    if (!targetPlan || !currentSubPlan) return 0;
+
+    const newPrice = this.pricingService.getPrice(targetPlan, cycle);
+    let oldPrice = 0;
+    if (currentSubPlan !== 'free') {
+      oldPrice = this.pricingService.getPrice(currentSubPlan as 'basic' | 'premium', cycle);
+    }
+
+    const priceDiff = newPrice - oldPrice;
+    if (priceDiff <= 0) return 0;
+
+    // Calculate prorated amount based on days remaining
+    const daysRemaining = this.daysRemaining();
+    const totalDays = this.totalDaysInCycle();
+    return (priceDiff / totalDays) * daysRemaining;
+  });
+
   constructor() {
-     effect(() => {
-      const targetPlan = this.plan();
-      const currentSubPlan = this.currentPlan();
-      const cycle = this.billingCycle();
-
-      if (targetPlan && currentSubPlan) {
-        const newPrice = this.pricingService.getPrice(targetPlan, cycle);
-        
-        let oldPrice = 0;
-        if (currentSubPlan !== 'free') {
-            oldPrice = this.pricingService.getPrice(currentSubPlan as 'basic' | 'premium', cycle);
-        }
-
-        const proratedPrice = Math.max(0, newPrice - oldPrice);
-        this.price.set(proratedPrice);
-      }
+    effect(() => {
+      const proratedPrice = this.proratedAmount();
+      this.price.set(Math.max(0, proratedPrice));
     });
   }
 
@@ -96,6 +112,15 @@ export class CheckoutComponent implements OnInit {
   selectPaymentMethod(method: PaymentMethod) {
     this.selectedPaymentMethod.set(method);
     this.paymentError.set(null);
+    this.pixKeyCopied.set(false);
+  }
+
+  copyPixKey() {
+    const pixKey = this.settings().pixKey;
+    navigator.clipboard.writeText(pixKey).then(() => {
+      this.pixKeyCopied.set(true);
+      setTimeout(() => this.pixKeyCopied.set(false), 3000);
+    });
   }
 
   async processPayment() {
@@ -105,18 +130,24 @@ export class CheckoutComponent implements OnInit {
     await new Promise(resolve => setTimeout(resolve, 2000));
 
     const method = this.selectedPaymentMethod();
-    
+
     if (method === 'credit-card') {
       console.log('Processing credit card payment...');
     } else if (method === 'crypto-web3') {
       console.log('Processing Web3 payment...');
     } else if (method === 'crypto-gatepay') {
-       console.log('Processing GatePay payment...');
+      console.log('Processing GatePay payment...');
+    } else if (method === 'pix') {
+      console.log('Processing PIX payment...');
+    } else if (method === 'bank-transfer-br' || method === 'bank-transfer-intl') {
+      console.log('Processing bank transfer payment...');
     }
-    
+
     const newPlan = this.plan();
+    const cycle = this.billingCycle();
     if (newPlan) {
-      this.authService.setSubscriptionPlan(newPlan);
+      // Use upgradePlan to track billing cycle
+      this.authService.upgradePlan(newPlan, cycle);
       const t = this.translationService.translate();
       const planName = t(newPlan);
       this.toastService.show({

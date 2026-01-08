@@ -1,4 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { ReactiveFormsModule, FormBuilder, Validators, FormGroup, FormControl } from '@angular/forms';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { GeminiService } from '../../services/gemini.service';
@@ -17,7 +19,7 @@ interface Tool {
 @Component({
   selector: 'app-tax-calculator',
   standalone: true,
-  imports: [ReactiveFormsModule, TranslatePipe, DynamicCurrencyPipe, CurrencyMaskDirective],
+  imports: [CommonModule, ReactiveFormsModule, TranslatePipe, DynamicCurrencyPipe, CurrencyMaskDirective],
   template: `
     <div>
       @if (geminiService.isInitialized()) {
@@ -30,7 +32,7 @@ interface Tool {
           @for(tool of tools; track tool.id) {
             <button (click)="openToolModal(tool)" class="text-left p-6 glass-content hover:bg-white/5 hover:border-cyan-500/50 transition-all transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-cyan-500 group">
               <div class="flex items-center">
-                <div class="flex items-center justify-center h-12 w-12 rounded-xl bg-cyan-500/10 text-cyan-400 group-hover:text-cyan-300 transition-colors" [innerHTML]="tool.icon"></div>
+                <div class="smart-tool-icon flex items-center justify-center h-12 w-12 rounded-xl bg-cyan-500/10 text-cyan-400 group-hover:text-cyan-300 transition-colors" [ngClass]="'icon-' + tool.id.replace('_', '-')" [innerHTML]="getSafeIcon(tool.icon)"></div>
                 <h3 class="ml-4 text-lg font-semibold text-white">{{ tool.titleKey | translate }}</h3>
               </div>
               <p class="mt-2 text-sm text-gray-400">{{ tool.descriptionKey | translate }}</p>
@@ -288,6 +290,7 @@ interface Tool {
 export class TaxCalculatorComponent {
   // ... existing component logic remains unchanged ...
   private fb = inject(FormBuilder);
+  private sanitizer = inject(DomSanitizer);
   geminiService = inject(GeminiService);
   private exportService = inject(ExportService);
   private currencyService = inject(CurrencyService);
@@ -353,6 +356,10 @@ export class TaxCalculatorComponent {
       case 'annual_salary': return this.annualSalaryForm;
       default: throw new Error('Invalid tool ID');
     }
+  }
+
+  getSafeIcon(icon: string): SafeHtml {
+    return this.sanitizer.bypassSecurityTrustHtml(icon);
   }
 
   openToolModal(tool: Tool) {
