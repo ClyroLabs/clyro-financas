@@ -116,6 +116,18 @@ export class AuthService {
         address: '456 User St, Apt 2B, Townsville, 54321',
         phoneNumber: '555-0102',
         status: 'active'
+      },
+      'testfree@clyro.com': {
+        id: '3',
+        name: 'Test Free User',
+        email: 'testfree@clyro.com',
+        password: 'password123',
+        role: 'user',
+        subscriptionPlan: 'free',
+        use2fa: false,
+        twoFactorMethod: 'none',
+        twoFactorSecret: '',
+        status: 'active'
       }
     };
     this._users.set(defaultUsers);

@@ -205,8 +205,8 @@ interface Tool {
                            <div class="space-y-6">
                               <h4 class="text-lg font-semibold text-cyan-400 border-b border-white/10 pb-2">{{'analysis_results' | translate}}</h4>
                               <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
-                                  <div class="bg-white/5 p-4 rounded-xl border border-white/5"><p class="text-sm text-gray-400">{{'gross_profit' | translate}}</p><p class="text-xl font-bold text-white">{{results.grossProfit | dynamicCurrency}}</p></div>
-                                  <div class="bg-white/5 p-4 rounded-xl border border-white/5"><p class="text-sm text-gray-400">{{'operating_profit' | translate}}</p><p class="text-xl font-bold text-white">{{results.operatingProfit | dynamicCurrency}}</p></div>
+                                  <div class="bg-white/5 p-4 rounded-xl border border-white/5"><p class="text-sm text-gray-400">{{'gross_profit' | translate}}</p><p class="text-xl font-bold text-white">{{results.grossProfit | dynamicCurrency: true}}</p></div>
+                                  <div class="bg-white/5 p-4 rounded-xl border border-white/5"><p class="text-sm text-gray-400">{{'operating_profit' | translate}}</p><p class="text-xl font-bold text-white">{{results.operatingProfit | dynamicCurrency: true}}</p></div>
                                   <div class="bg-white/5 p-4 rounded-xl border border-white/5"><p class="text-sm text-gray-400">{{'net_profit_margin' | translate}}</p><p class="text-xl font-bold text-white">{{results.netProfitMargin | number:'1.2-2'}}%</p></div>
                               </div>
                               <h4 class="text-lg font-semibold text-cyan-400 border-b border-white/10 pb-2">{{'ai_powered_insights' | translate}}</h4>
@@ -218,7 +218,7 @@ interface Tool {
                         @if(currentResults(); as results) {
                            <div class="space-y-6">
                               <h4 class="text-lg font-semibold text-cyan-400 border-b border-white/10 pb-2">{{'budget_summary' | translate}}</h4>
-                               <div class="bg-white/5 p-4 rounded-xl text-center border border-white/5"><p class="text-sm text-gray-400">{{'remaining_funds' | translate}}</p><p class="text-3xl font-bold mt-1" [class]="results.remaining >= 0 ? 'text-green-400' : 'text-red-400'">{{results.remaining | dynamicCurrency}}</p></div>
+                               <div class="bg-white/5 p-4 rounded-xl text-center border border-white/5"><p class="text-sm text-gray-400">{{'remaining_funds' | translate}}</p><p class="text-3xl font-bold mt-1" [class]="results.remaining >= 0 ? 'text-green-400' : 'text-red-400'">{{results.remaining | dynamicCurrency: true}}</p></div>
                               <h4 class="text-lg font-semibold text-cyan-400 border-b border-white/10 pb-2">{{'ai_powered_insights' | translate}}</h4>
                               <p class="text-gray-300 bg-white/5 p-4 rounded-xl border border-white/5 leading-relaxed">{{results.analysis}}</p>
                               <ul class="list-disc list-inside space-y-2 text-gray-300 pl-2">@for(item of results.recommendations; track item){<li>{{item}}</li>}</ul>
@@ -230,9 +230,9 @@ interface Tool {
                            <div class="space-y-6">
                               <h4 class="text-lg font-semibold text-cyan-400 border-b border-white/10 pb-2">{{'analysis_results' | translate}}</h4>
                               <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
-                                  <div class="bg-white/5 p-4 rounded-xl border border-white/5"><p class="text-sm text-gray-400">{{'projected_future_value' | translate}}</p><p class="text-2xl font-bold text-green-400 mt-1">{{results.futureValue | dynamicCurrency}}</p></div>
-                                  <div class="bg-white/5 p-4 rounded-xl border border-white/5"><p class="text-sm text-gray-400">{{'total_contributions' | translate}}</p><p class="text-xl font-bold text-white mt-1">{{results.totalContributions | dynamicCurrency}}</p></div>
-                                  <div class="bg-white/5 p-4 rounded-xl border border-white/5"><p class="text-sm text-gray-400">{{'total_interest_earned' | translate}}</p><p class="text-xl font-bold text-white mt-1">{{results.totalInterest | dynamicCurrency}}</p></div>
+                                  <div class="bg-white/5 p-4 rounded-xl border border-white/5"><p class="text-sm text-gray-400">{{'projected_future_value' | translate}}</p><p class="text-2xl font-bold text-green-400 mt-1">{{results.futureValue | dynamicCurrency: true}}</p></div>
+                                  <div class="bg-white/5 p-4 rounded-xl border border-white/5"><p class="text-sm text-gray-400">{{'total_contributions' | translate}}</p><p class="text-xl font-bold text-white mt-1">{{results.totalContributions | dynamicCurrency: true}}</p></div>
+                                  <div class="bg-white/5 p-4 rounded-xl border border-white/5"><p class="text-sm text-gray-400">{{'total_interest_earned' | translate}}</p><p class="text-xl font-bold text-white mt-1">{{results.totalInterest | dynamicCurrency: true}}</p></div>
                               </div>
                               <h4 class="text-lg font-semibold text-cyan-400 border-b border-white/10 pb-2">{{'ai_powered_insights' | translate}}</h4>
                               <p class="text-gray-300 whitespace-pre-wrap leading-relaxed">{{results.insights}}</p>
@@ -244,11 +244,11 @@ interface Tool {
                           <div class="space-y-6 text-center">
                               <div class="bg-white/5 p-6 rounded-xl border border-white/10">
                                   <p class="text-sm text-gray-400 uppercase tracking-wider">{{'monthly_income' | translate}}</p>
-                                  <p class="text-2xl font-bold text-white mt-1">{{results.monthlyIncome | dynamicCurrency}}</p>
+                                  <p class="text-2xl font-bold text-white mt-1">{{results.monthlyIncome | dynamicCurrency: true}}</p>
                               </div>
                               <div class="bg-green-500/10 p-8 rounded-xl border border-green-500/20">
                                   <p class="text-sm text-green-300 uppercase tracking-wider">{{'calculated_annual_salary' | translate}}</p>
-                                  <p class="text-4xl font-bold text-green-400 mt-2">{{results.annualSalary | dynamicCurrency}}</p>
+                                  <p class="text-4xl font-bold text-green-400 mt-2">{{results.annualSalary | dynamicCurrency: true}}</p>
                               </div>
                           </div>
                         }

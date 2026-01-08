@@ -7,7 +7,8 @@ export const adminGuard: CanActivateFn = (route, state) => {
   const router = inject(Router);
 
   // This guard runs after authGuard, so user is guaranteed to be non-null.
-  if (authService.user()?.role === 'super-admin') {
+  const role = authService.user()?.role;
+  if (role === 'super-admin' || role === 'admin') {
     return true;
   } else {
     // Redirect to the dashboard if the user is not an admin

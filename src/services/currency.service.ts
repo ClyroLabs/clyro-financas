@@ -16,11 +16,11 @@ export type CryptoAsset = 'ETH' | 'BNB' | 'USDT' | 'WBTC' | 'BTC';
 export class CurrencyService implements OnDestroy {
   private translationService = inject(TranslationService);
 
-  // Mock exchange rates based on USD, now as a signal
+  // Mock exchange rates based on BRL (Base Currency)
   private fiatRates = signal({
-    'USD': 1,
-    'BRL': 5.45,
-    'EUR': 0.93
+    'BRL': 1.0,
+    'USD': 0.183, // ~ 1/5.45
+    'EUR': 0.169  // ~ 1/5.90
   });
 
   private cryptoRatesUSD = signal<Record<CryptoAsset, number>>({
@@ -79,10 +79,12 @@ export class CurrencyService implements OnDestroy {
     // Here, we simulate fluctuations.
     this.fiatRates.update(currentRates => {
       const newRates = { ...currentRates };
-      // Fluctuate BRL rate by up to 2%
-      newRates.BRL = parseFloat((currentRates.BRL * (1 + (Math.random() - 0.5) * 0.04)).toFixed(2));
+      // Keep BRL fixed at 1 as base
+      newRates.BRL = 1;
+      // Fluctuate USD rate by up to 2%
+      newRates.USD = parseFloat((currentRates.USD * (1 + (Math.random() - 0.5) * 0.04)).toFixed(4));
       // Fluctuate EUR rate by up to 2%
-      newRates.EUR = parseFloat((currentRates.EUR * (1 + (Math.random() - 0.5) * 0.04)).toFixed(2));
+      newRates.EUR = parseFloat((currentRates.EUR * (1 + (Math.random() - 0.5) * 0.04)).toFixed(4));
       return newRates;
     });
     this.cryptoRatesUSD.update(currentRates => {
@@ -108,30 +110,48 @@ export class CurrencyService implements OnDestroy {
     }
   });
 
-  convert(valueInUsd: number): number {
+  convert(valueInBaseCurrency: number): number {
     const targetCurrency = this.currencyInfo().currency;
     const currentRates = this.fiatRates();
     const rate = currentRates[targetCurrency as keyof typeof currentRates] ?? 1;
-    return valueInUsd * rate;
+    return valueInBaseCurrency * rate;
   }
 
   convertToUsd(valueInCurrentCurrency: number): number {
     const targetCurrency = this.currencyInfo().currency;
     const currentRates = this.fiatRates();
-    const rate = currentRates[targetCurrency as keyof typeof currentRates] ?? 1;
-    if (rate === 0) return valueInCurrentCurrency; // prevent division by zero
-    return valueInCurrentCurrency / rate;
+    const currentRate = currentRates[targetCurrency as keyof typeof currentRates] ?? 1;
+    const usdRate = currentRates['USD'];
+
+    if (currentRate === 0) return 0;
+
+    // Convert to Base (BRL) then to USD
+    const valueInBase = valueInCurrentCurrency / currentRate;
+    return valueInBase * usdRate;
   }
 
   convertFromUsd(valueInUsd: number, toCurrency: Currency): number {
-    const rate = this.fiatRates()[toCurrency] ?? 1;
-    return valueInUsd * rate;
+    const rates = this.fiatRates();
+    const usdRate = rates['USD'];
+    const toRate = rates[toCurrency] ?? 1;
+
+    if (usdRate === 0) return 0;
+
+    // Convert USD to Base (BRL) then to Target
+    const valueInBase = valueInUsd / usdRate;
+    return valueInBase * toRate;
   }
 
   convertToUsdFrom(value: number, fromCurrency: Currency): number {
-    const rate = this.fiatRates()[fromCurrency] ?? 1;
-    if (rate === 0) return value;
-    return value / rate;
+    const rates = this.fiatRates();
+    const fromRate = rates[fromCurrency] ?? 1;
+    const usdRate = rates['USD'];
+
+    if (fromRate === 0) return 0;
+
+    // Convert From to Base (BRL) then to USD
+    const valueInBase = value / fromRate;
+    return valueInBase * usdRate;
   }
 
   getCryptoPriceInUSD(asset: CryptoAsset): number {

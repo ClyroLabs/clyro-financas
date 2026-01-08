@@ -725,3 +725,73 @@ body {
   animation-duration: 0.5s !important;
   filter: drop-shadow(0 0 20px rgba(6, 182, 212, 0.8)) !important;
 }
+
+/* --- THEME SUPPORT --- */
+
+/* Light Theme Overrides */
+body.theme-light {
+  background-color: #f3f4f6;
+  /* gray-100 */
+  color: #111827;
+  /* gray-900 */
+}
+
+body.theme-light .glass-panel,
+body.theme-light .glass-card,
+body.theme-light .glass-content,
+body.theme-light .glass-header {
+  background: rgba(255, 255, 255, 0.8) !important;
+  border-color: rgba(0, 0, 0, 0.1) !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+body.theme-light h1,
+body.theme-light h2,
+body.theme-light h3,
+body.theme-light h4,
+body.theme-light h5,
+body.theme-light h6,
+body.theme-light p,
+body.theme-light span,
+body.theme-light label {
+  color: #1f2937;
+  /* gray-800 */
+}
+
+body.theme-light .text-white {
+  color: #1f2937 !important;
+}
+
+body.theme-light .text-gray-400 {
+  color: #6b7280 !important;
+}
+
+body.theme-light .border-white\/10 {
+  border-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+/* INPUTS in Light Mode */
+body.theme-light .clyro-input,
+body.theme-light input,
+body.theme-light select,
+body.theme-light textarea {
+  background-color: rgba(255, 255, 255, 0.9) !important;
+  border-color: rgba(0, 0, 0, 0.2) !important;
+  color: #111827 !important;
+}
+
+body.theme-light .clyro-input::placeholder {
+  color: #9ca3af !important;
+}
+
+/* Transparent Theme Overrides */
+body.theme-transparent {
+  background: transparent !important;
+}
+
+body.theme-transparent .glass-panel,
+body.theme-transparent .glass-card,
+body.theme-transparent .glass-content {
+  background: rgba(0, 0, 0, 0.2) !important;
+  backdrop-filter: blur(10px);
+}

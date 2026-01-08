@@ -9,12 +9,12 @@ import { CurrencyService } from '../services/currency.service';
 export class DynamicCurrencyPipe implements PipeTransform {
   private currencyService = inject(CurrencyService);
 
-  transform(valueInUsd: number | null | undefined): string {
+  transform(valueInUsd: number | null | undefined, skipConversion: boolean = false): string {
     if (valueInUsd === null || valueInUsd === undefined) {
       return '';
     }
 
-    const convertedValue = this.currencyService.convert(valueInUsd);
-    return this.currencyService.format(convertedValue);
+    const valueToFormat = skipConversion ? valueInUsd : this.currencyService.convert(valueInUsd);
+    return this.currencyService.format(valueToFormat);
   }
 }

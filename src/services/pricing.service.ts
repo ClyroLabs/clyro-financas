@@ -10,8 +10,8 @@ export interface Prices {
 })
 export class PricingService {
   private _prices = signal<Prices>({
-    basic: { monthly: 10.00, yearly: 98.40 },
-    premium: { monthly: 20.00, yearly: 196.80 }
+    basic: { monthly: 29.90, yearly: 299.00 },
+    premium: { monthly: 59.90, yearly: 599.00 }
   });
 
   public readonly prices = this._prices.asReadonly();
