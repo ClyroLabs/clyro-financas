@@ -90,16 +90,10 @@ export class AdminComponent {
   updatePrices() {
     if (this.priceForm.valid) {
       const formValue = this.priceForm.value;
-      this.pricingService.updatePrices({
-        basic: {
-          monthly: formValue.basicMonthly ?? 0,
-          yearly: formValue.basicYearly ?? 0
-        },
-        premium: {
-          monthly: formValue.premiumMonthly ?? 0,
-          yearly: formValue.premiumYearly ?? 0
-        }
-      });
+      this.pricingService.updatePrices(
+        formValue.basicMonthly ?? 0,
+        formValue.premiumMonthly ?? 0
+      );
       this.toastService.show({ messageKey: 'prices_updated' });
     }
   }

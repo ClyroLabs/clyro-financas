@@ -10,118 +10,398 @@
   </div>
 
   <div class="relative z-10 p-6 lg:p-8">
-    <div class="container mx-auto max-w-4xl">
-      <div class="flex items-center mb-8">
-        <button (click)="backToPricing()" class="p-2 rounded-full hover:bg-gray-700/50 transition mr-4">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-300" fill="none" viewBox="0 0 24 24"
-            stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+    <div class="container mx-auto max-w-5xl">
+
+      <!-- Checkout Header -->
+      <div class="flex items-center justify-between mb-8">
+        <div class="flex items-center">
+          <button (click)="backToPricing()"
+            class="p-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 transition-all duration-200 mr-4 group">
+            <svg xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5 text-gray-400 group-hover:text-cyan-400 transition-colors" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+          <div>
+            <h2 class="text-2xl lg:text-3xl font-bold text-white">{{ 'checkout_title' | translate }}</h2>
+            <p class="text-gray-400 text-sm mt-1">{{ 'checkout_secure_payment' | translate }}</p>
+          </div>
+        </div>
+        <!-- Secure Badge -->
+        <div class="hidden sm:flex items-center gap-2 px-4 py-2 bg-green-500/10 border border-green-500/30 rounded-xl">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-400" viewBox="0 0 20 20"
+            fill="currentColor">
+            <path fill-rule="evenodd"
+              d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+              clip-rule="evenodd" />
           </svg>
-        </button>
-        <h2 class="text-3xl font-bold text-white drop-shadow-md">{{ 'checkout_title' | translate }}</h2>
+          <span class="text-green-400 text-sm font-medium">SSL {{ 'checkout_secure_payment' | translate }}</span>
+        </div>
       </div>
+
+      <!-- Transaction Type Banner -->
+      @if (isUpgrade()) {
+      <div
+        class="mb-6 p-4 rounded-xl bg-gradient-to-r from-cyan-500/10 to-blue-500/10 border border-cyan-500/30 flex items-center gap-4">
+        <div class="p-3 rounded-full bg-cyan-500/20">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-cyan-400" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd"
+              d="M12 7a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0V8.414l-4.293 4.293a1 1 0 01-1.414 0L8 10.414l-4.293 4.293a1 1 0 01-1.414-1.414l5-5a1 1 0 011.414 0L11 10.586 14.586 7H12z"
+              clip-rule="evenodd" />
+          </svg>
+        </div>
+        <div class="flex-1">
+          <h3 class="text-white font-semibold text-lg">{{ 'checkout_upgrade_notice' | translate }}</h3>
+          <p class="text-gray-400 text-sm">{{ 'checkout_prorated_charge' | translate: { days: daysRemaining() } }}</p>
+        </div>
+      </div>
+      }
+
+      @if (isDowngrade()) {
+      <div
+        class="mb-6 p-4 rounded-xl bg-gradient-to-r from-emerald-500/10 to-green-500/10 border border-emerald-500/30 flex items-center gap-4">
+        <div class="p-3 rounded-full bg-emerald-500/20">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-emerald-400" viewBox="0 0 20 20"
+            fill="currentColor">
+            <path
+              d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" />
+          </svg>
+        </div>
+        <div class="flex-1">
+          <h3 class="text-white font-semibold text-lg">{{ 'checkout_downgrade_notice' | translate }}</h3>
+          <p class="text-gray-400 text-sm">{{ 'checkout_credit_to_receive' | translate }}</p>
+        </div>
+      </div>
+      }
 
       <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
         <!-- Order Summary -->
-        <div class="lg:col-span-2 glass-content p-6 h-fit">
-          <h3 class="text-xl font-semibold text-cyan-400 border-b border-gray-700 pb-4 mb-6">{{ 'order_summary' |
-            translate }}</h3>
-          <div class="space-y-4">
-            <div class="flex justify-between items-center text-sm">
-              <span class="text-gray-400">{{ 'upgrading_from' | translate }}</span>
-              <span class="font-semibold text-white">{{ currentPlanDisplayName() }}</span>
+        <div class="lg:col-span-2 space-y-6">
+
+          <!-- Plan Details Card -->
+          <div class="checkout-card p-6">
+            <div class="flex items-center gap-3 mb-6">
+              <div class="p-2.5 rounded-xl bg-cyan-500/20">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-cyan-400" viewBox="0 0 20 20"
+                  fill="currentColor">
+                  <path
+                    d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z" />
+                </svg>
+              </div>
+              <h3 class="text-lg font-semibold text-white">{{ 'order_summary' | translate }}</h3>
             </div>
-            <div class="flex justify-between items-center">
-              <span class="text-gray-400">{{ 'plan' | translate }}</span>
-              <span class="font-semibold text-white">{{ planDisplayName() }}</span>
+
+            <div class="space-y-4">
+              <!-- Current Plan -->
+              <div class="flex justify-between items-center py-3 border-b border-white/5">
+                <div class="flex items-center gap-2">
+                  <span class="text-gray-400 text-sm">{{ 'upgrading_from' | translate }}</span>
+                </div>
+                <span class="px-3 py-1 rounded-lg bg-white/5 text-gray-300 text-sm font-medium">{{
+                  currentPlanDisplayName() }}</span>
+              </div>
+
+              <!-- New Plan -->
+              <div class="flex justify-between items-center py-3 border-b border-white/5">
+                <div class="flex items-center gap-2">
+                  <span class="text-gray-400 text-sm">{{ 'plan' | translate }}</span>
+                </div>
+                <span class="px-3 py-1 rounded-lg bg-cyan-500/20 text-cyan-400 text-sm font-medium">{{ planDisplayName()
+                  }}</span>
+              </div>
+
+              <!-- Billing Cycle -->
+              <div class="flex justify-between items-center py-3 border-b border-white/5">
+                <span class="text-gray-400 text-sm">{{ 'billing_cycle' | translate }}</span>
+                <span class="text-white text-sm font-medium">{{ billingCycle() === 'monthly' ? ('monthly' | translate) :
+                  ('yearly' | translate) }}</span>
+              </div>
+
+              <!-- Days Remaining -->
+              <div class="flex justify-between items-center py-3 border-b border-white/5">
+                <span class="text-gray-400 text-sm">{{ 'checkout_days_remaining' | translate }}</span>
+                <span class="text-white text-sm font-medium">{{ daysRemaining() }} {{ 'days_remaining_in_cycle' |
+                  translate: { days: '' } }}</span>
+              </div>
             </div>
-            <div class="flex justify-between items-center">
-              <span class="text-gray-400">{{ 'billing_cycle' | translate }}</span>
-              <span class="font-semibold text-white">{{ billingCycle() === 'monthly' ? ('monthly' | translate) :
-                ('yearly' | translate) }}</span>
+          </div>
+
+          <!-- Payment Summary Card -->
+          <div class="checkout-card p-6">
+            @if (isUpgrade() || !isDowngrade()) {
+            <!-- Payment Info -->
+            <div class="flex items-center gap-3 mb-4">
+              <div class="p-2 rounded-lg bg-cyan-500/20">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-cyan-400" viewBox="0 0 20 20"
+                  fill="currentColor">
+                  <path fill-rule="evenodd"
+                    d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z"
+                    clip-rule="evenodd" />
+                </svg>
+              </div>
+              <span class="text-gray-400 text-sm">{{ 'total_due_today' | translate }}</span>
             </div>
-            <div class="border-t border-gray-700 my-4"></div>
-            <div class="flex justify-between items-center text-lg">
-              <span class="text-gray-300">{{ 'total_due_today' | translate }}</span>
-              <span class="font-bold text-cyan-400">{{ price() | dynamicCurrency }}</span>
+            <div class="flex items-baseline gap-2 mb-2">
+              <span class="text-4xl font-bold text-cyan-400">{{ currencyService.formatBRL(planPrice()) }}</span>
+              <span class="text-gray-500 text-sm">{{ billingCycle() === 'monthly' ? ('per_month' | translate) :
+                ('per_year' | translate) }}</span>
             </div>
+            <p class="text-gray-500 text-xs">~ {{
+              currencyService.formatUSD(currencyService.convertBRLtoUSD(planPrice())) }}</p>
+
+            @if (cardFeeAmount() > 0) {
+            <div class="mt-4 p-3 bg-yellow-500/10 border border-yellow-500/30 rounded-xl">
+              <div class="flex justify-between items-center">
+                <span class="text-yellow-400 text-sm">{{ 'card_fee_installments' | translate }}</span>
+                <span class="text-yellow-400 text-sm font-medium">+ {{ currencyService.formatBRL(cardFeeAmount())
+                  }}</span>
+              </div>
+              <p class="text-gray-500 text-xs mt-1">{{ 'card_fee_info' | translate: { installments:
+                selectedInstallments() } }}</p>
+              <div class="mt-2 flex justify-between items-center pt-2 border-t border-yellow-500/20">
+                <span class="text-white text-sm font-medium">{{ 'total_with_fee' | translate }}</span>
+                <span class="text-cyan-400 text-sm font-bold">{{ currencyService.formatBRL(amountToPay()) }}</span>
+              </div>
+            </div>
+            }
+            }
+
+            @if (isDowngrade()) {
+            <!-- Downgrade Refund Info -->
+            <div class="refund-info-panel p-5 rounded-xl mb-4">
+              <div class="flex items-center gap-3 mb-3">
+                <div class="p-2 rounded-lg bg-emerald-500/30">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-emerald-400" viewBox="0 0 20 20"
+                    fill="currentColor">
+                    <path fill-rule="evenodd"
+                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                      clip-rule="evenodd" />
+                  </svg>
+                </div>
+                <span class="text-emerald-400 font-semibold">{{ 'checkout_you_will_receive' | translate }}</span>
+              </div>
+              <div class="text-3xl font-bold text-emerald-400 mb-2">{{ currencyService.formatBRL(refundAmount()) }}
+              </div>
+              <p class="text-gray-500 text-xs mb-3">~ {{
+                currencyService.formatUSD(currencyService.convertBRLtoUSD(refundAmount())) }}</p>
+
+              <div class="space-y-3 pt-3 border-t border-emerald-500/20">
+                <div class="flex items-start gap-3">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-emerald-400 mt-0.5 flex-shrink-0"
+                    viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd"
+                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
+                      clip-rule="evenodd" />
+                  </svg>
+                  <div>
+                    <span class="text-gray-300 text-sm font-medium">{{ 'checkout_refund_timeline' | translate }}</span>
+                    <p class="text-gray-500 text-xs">{{ 'checkout_refund_business_days' | translate }}</p>
+                  </div>
+                </div>
+
+                <div class="flex items-start gap-3">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-emerald-400 mt-0.5 flex-shrink-0"
+                    viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z" />
+                    <path fill-rule="evenodd"
+                      d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z"
+                      clip-rule="evenodd" />
+                  </svg>
+                  <div>
+                    <span class="text-gray-300 text-sm font-medium">{{ 'checkout_refund_method' | translate }}</span>
+                    <p class="text-gray-500 text-xs">{{ refundMethodText() }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="text-center">
+              <p class="text-gray-400 text-sm">{{ 'downgrade_effective_date' | translate: { endDate: billingEndDate() }
+                }}</p>
+            </div>
+            }
           </div>
         </div>
 
         <!-- Payment Methods -->
-        <div class="lg:col-span-3 glass-content p-6">
-          <h3 class="text-xl font-semibold text-cyan-400 border-b border-gray-700 pb-4 mb-6">{{ 'select_payment_method'
-            | translate }}</h3>
-          <div class="space-y-4">
+        <div class="lg:col-span-3 checkout-card p-6">
+          <div class="flex items-center gap-3 mb-6">
+            <div class="p-2.5 rounded-xl bg-cyan-500/20">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-cyan-400" viewBox="0 0 20 20"
+                fill="currentColor">
+                <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z" />
+                <path fill-rule="evenodd"
+                  d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z"
+                  clip-rule="evenodd" />
+              </svg>
+            </div>
+            <h3 class="text-lg font-semibold text-white">{{ 'select_payment_method' | translate }}</h3>
+          </div>
+
+          <div class="space-y-3">
             @if (settings().enableCreditCard) {
-            <div (click)="selectPaymentMethod('credit-card')" class="p-4 border rounded-lg cursor-pointer transition"
-              [class]="selectedPaymentMethod() === 'credit-card' ? 'border-cyan-500 bg-cyan-900/20' : 'border-gray-600 hover:border-gray-500'">
-              <div class="flex items-center">
-                <input type="radio" name="payment-method"
-                  class="h-4 w-4 text-cyan-600 bg-gray-700 border-gray-500 focus:ring-cyan-500"
-                  [checked]="selectedPaymentMethod() === 'credit-card'">
-                <label class="ml-3 block text-sm font-medium text-white">{{ 'credit_card' | translate }}</label>
+            <div (click)="selectPaymentMethod('credit-card')" class="payment-method-card"
+              [class.selected]="selectedPaymentMethod() === 'credit-card'">
+              <div class="flex items-center gap-4">
+                <div class="payment-method-radio" [class.checked]="selectedPaymentMethod() === 'credit-card'">
+                  @if (selectedPaymentMethod() === 'credit-card') {
+                  <div class="w-2.5 h-2.5 rounded-full bg-cyan-400"></div>
+                  }
+                </div>
+                <div class="payment-method-icon bg-blue-500/20">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-400" viewBox="0 0 20 20"
+                    fill="currentColor">
+                    <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z" />
+                    <path fill-rule="evenodd"
+                      d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z"
+                      clip-rule="evenodd" />
+                  </svg>
+                </div>
+                <div class="flex-1">
+                  <span class="text-white font-medium">{{ 'credit_card' | translate }}</span>
+                  <p class="text-gray-500 text-xs mt-0.5">{{ 'credit_card_desc' | translate }}</p>
+                </div>
+                <div class="flex gap-1.5">
+                  <div
+                    class="w-8 h-5 bg-white/10 rounded flex items-center justify-center text-[10px] font-bold text-gray-400">
+                    VISA</div>
+                  <div
+                    class="w-8 h-5 bg-white/10 rounded flex items-center justify-center text-[10px] font-bold text-gray-400">
+                    MC</div>
+                </div>
               </div>
-              <p class="text-gray-400 text-sm mt-2 ml-7">{{ 'credit_card_desc' | translate }}</p>
+
+              @if (selectedPaymentMethod() === 'credit-card') {
+              <div class="mt-4 p-4 bg-black/30 rounded-xl border border-white/5">
+                <label class="text-gray-400 text-sm mb-2 block">{{ 'select_installments' | translate }}</label>
+                <div class="grid grid-cols-3 gap-2">
+                  @for (i of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]; track i) {
+                  <button (click)="selectedInstallments.set(i); $event.stopPropagation()"
+                    class="px-3 py-2 text-sm rounded-lg border transition-all duration-200" [class]="selectedInstallments() === i 
+                      ? 'bg-cyan-500/20 border-cyan-500/50 text-cyan-400' 
+                      : 'bg-white/5 border-white/10 text-gray-400 hover:bg-white/10'">
+                    {{ i }}x
+                    @if (i > maxInstallmentsWithoutFee) {
+                    <span class="text-yellow-400 text-[10px] ml-1">*</span>
+                    }
+                  </button>
+                  }
+                </div>
+                <p class="text-gray-500 text-xs mt-3">
+                  <span class="text-green-400">✓</span> {{ 'up_to_3x_no_fee' | translate }}
+                </p>
+                <p class="text-gray-500 text-xs mt-1">
+                  <span class="text-yellow-400">*</span> {{ 'above_3x_with_fee' | translate: { percent: cardFeePercent }
+                  }}
+                </p>
+              </div>
+              }
             </div>
             }
 
             @if (settings().enableCrypto) {
-            <div (click)="selectPaymentMethod('crypto-web3')" class="p-4 border rounded-lg cursor-pointer transition"
-              [class]="selectedPaymentMethod() === 'crypto-web3' ? 'border-cyan-500 bg-cyan-900/20' : 'border-gray-600 hover:border-gray-500'">
-              <div class="flex items-center">
-                <input type="radio" name="payment-method"
-                  class="h-4 w-4 text-cyan-600 bg-gray-700 border-gray-500 focus:ring-cyan-500"
-                  [checked]="selectedPaymentMethod() === 'crypto-web3'">
-                <label class="ml-3 block text-sm font-medium text-white">{{ 'crypto_web3' | translate }}</label>
+            <div (click)="selectPaymentMethod('crypto-web3')" class="payment-method-card"
+              [class.selected]="selectedPaymentMethod() === 'crypto-web3'">
+              <div class="flex items-center gap-4">
+                <div class="payment-method-radio" [class.checked]="selectedPaymentMethod() === 'crypto-web3'">
+                  @if (selectedPaymentMethod() === 'crypto-web3') {
+                  <div class="w-2.5 h-2.5 rounded-full bg-cyan-400"></div>
+                  }
+                </div>
+                <div class="payment-method-icon bg-purple-500/20">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-purple-400" viewBox="0 0 20 20"
+                    fill="currentColor">
+                    <path fill-rule="evenodd"
+                      d="M10.496 2.132a1 1 0 00-.992 0l-7 4A1 1 0 003 8v7a1 1 0 100 2h14a1 1 0 100-2V8a1 1 0 00.496-1.868l-7-4zM6 9a1 1 0 00-1 1v3a1 1 0 102 0v-3a1 1 0 00-1-1zm3 1a1 1 0 012 0v3a1 1 0 11-2 0v-3zm5-1a1 1 0 00-1 1v3a1 1 0 102 0v-3a1 1 0 00-1-1z"
+                      clip-rule="evenodd" />
+                  </svg>
+                </div>
+                <div class="flex-1">
+                  <span class="text-white font-medium">{{ 'crypto_web3' | translate }}</span>
+                  <p class="text-gray-500 text-xs mt-0.5">{{ 'crypto_web3_desc' | translate }}</p>
+                </div>
               </div>
-              <p class="text-gray-400 text-sm mt-2 ml-7">{{ 'crypto_web3_desc' | translate }}</p>
             </div>
-            <div (click)="selectPaymentMethod('crypto-gatepay')" class="p-4 border rounded-lg cursor-pointer transition"
-              [class]="selectedPaymentMethod() === 'crypto-gatepay' ? 'border-cyan-500 bg-cyan-900/20' : 'border-gray-600 hover:border-gray-500'">
-              <div class="flex items-center">
-                <input type="radio" name="payment-method"
-                  class="h-4 w-4 text-cyan-600 bg-gray-700 border-gray-500 focus:ring-cyan-500"
-                  [checked]="selectedPaymentMethod() === 'crypto-gatepay'">
-                <label class="ml-3 block text-sm font-medium text-white">{{ 'crypto_gatepay' | translate }}</label>
+
+            <div (click)="selectPaymentMethod('crypto-gatepay')" class="payment-method-card"
+              [class.selected]="selectedPaymentMethod() === 'crypto-gatepay'">
+              <div class="flex items-center gap-4">
+                <div class="payment-method-radio" [class.checked]="selectedPaymentMethod() === 'crypto-gatepay'">
+                  @if (selectedPaymentMethod() === 'crypto-gatepay') {
+                  <div class="w-2.5 h-2.5 rounded-full bg-cyan-400"></div>
+                  }
+                </div>
+                <div class="payment-method-icon bg-orange-500/20">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-orange-400" viewBox="0 0 20 20"
+                    fill="currentColor">
+                    <path fill-rule="evenodd"
+                      d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"
+                      clip-rule="evenodd" />
+                  </svg>
+                </div>
+                <div class="flex-1">
+                  <span class="text-white font-medium">{{ 'crypto_gatepay' | translate }}</span>
+                  <p class="text-gray-500 text-xs mt-0.5">{{ 'crypto_gatepay_desc' | translate }}</p>
+                </div>
               </div>
-              <p class="text-gray-400 text-sm mt-2 ml-7">{{ 'crypto_gatepay_desc' | translate }}</p>
             </div>
             }
 
             <!-- PIX Payment -->
             @if (settings().enablePix) {
-            <div (click)="selectPaymentMethod('pix')" class="p-4 border rounded-lg cursor-pointer transition"
-              [class]="selectedPaymentMethod() === 'pix' ? 'border-cyan-500 bg-cyan-900/20' : 'border-gray-600 hover:border-gray-500'">
-              <div class="flex items-center">
-                <input type="radio" name="payment-method"
-                  class="h-4 w-4 text-cyan-600 bg-gray-700 border-gray-500 focus:ring-cyan-500"
-                  [checked]="selectedPaymentMethod() === 'pix'">
-                <label class="ml-3 block text-sm font-medium text-white">{{ 'pix_payment' | translate }}</label>
-                <span
-                  class="ml-2 px-2 py-0.5 text-xs font-semibold bg-green-500/20 text-green-400 rounded-full">🇧🇷</span>
+            <div (click)="selectPaymentMethod('pix')" class="payment-method-card"
+              [class.selected]="selectedPaymentMethod() === 'pix'">
+              <div class="flex items-center gap-4">
+                <div class="payment-method-radio" [class.checked]="selectedPaymentMethod() === 'pix'">
+                  @if (selectedPaymentMethod() === 'pix') {
+                  <div class="w-2.5 h-2.5 rounded-full bg-cyan-400"></div>
+                  }
+                </div>
+                <div class="payment-method-icon bg-green-500/20">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-400" viewBox="0 0 20 20"
+                    fill="currentColor">
+                    <path fill-rule="evenodd"
+                      d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z"
+                      clip-rule="evenodd" />
+                  </svg>
+                </div>
+                <div class="flex-1">
+                  <div class="flex items-center gap-2">
+                    <span class="text-white font-medium">{{ 'pix_payment' | translate }}</span>
+                    <span class="px-2 py-0.5 text-xs font-semibold bg-green-500/20 text-green-400 rounded-full">🇧🇷 {{
+                      'checkout_instant' | translate }}</span>
+                  </div>
+                  <p class="text-gray-500 text-xs mt-0.5">{{ 'pix_payment_desc' | translate }}</p>
+                </div>
               </div>
-              <p class="text-gray-400 text-sm mt-2 ml-7">{{ 'pix_payment_desc' | translate }}</p>
 
               @if (selectedPaymentMethod() === 'pix') {
-              <div class="mt-4 ml-7 p-4 bg-white/5 rounded-lg border border-white/10">
-                <div class="text-center">
-                  <div class="inline-block p-4 bg-white rounded-lg mb-3">
+              <div class="mt-4 p-4 bg-black/30 rounded-xl border border-white/5">
+                <div class="text-center mb-4">
+                  <div class="inline-block p-4 bg-white rounded-xl mb-3 shadow-lg">
                     <svg class="h-24 w-24" viewBox="0 0 100 100">
                       <rect width="100" height="100" fill="white" />
                       <text x="50" y="55" text-anchor="middle" font-size="10" fill="black">QR PIX</text>
                     </svg>
                   </div>
-                  <p class="text-xs text-gray-400 mb-3">{{ 'pix_scan_or_copy' | translate }}</p>
+                  <p class="text-gray-400 text-xs">{{ 'pix_scan_or_copy' | translate }}</p>
                 </div>
                 <div class="flex items-center gap-2">
                   <input type="text" readonly [value]="settings().pixKey"
-                    class="flex-1 px-3 py-2 text-sm bg-black/40 border border-white/10 rounded-lg text-gray-300" />
+                    class="flex-1 px-3 py-2.5 text-sm bg-black/40 border border-white/10 rounded-xl text-gray-300 font-mono" />
                   <button (click)="copyPixKey(); $event.stopPropagation()"
-                    class="px-3 py-2 text-sm font-medium rounded-lg transition"
-                    [class]="pixKeyCopied() ? 'bg-green-500/20 text-green-400' : 'bg-cyan-500/20 text-cyan-400 hover:bg-cyan-500/30'">
+                    class="px-4 py-2.5 text-sm font-medium rounded-xl transition-all duration-200"
+                    [class]="pixKeyCopied() ? 'bg-green-500/20 text-green-400 border border-green-500/30' : 'bg-cyan-500/20 text-cyan-400 hover:bg-cyan-500/30 border border-cyan-500/30'">
                     @if (pixKeyCopied()) {
-                    ✓ {{ 'copied' | translate }}
+                    <span class="flex items-center gap-1">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd"
+                          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                          clip-rule="evenodd" />
+                      </svg>
+                      {{ 'copied' | translate }}
+                    </span>
                     } @else {
                     {{ 'copy' | translate }}
                     }
@@ -134,59 +414,88 @@
 
             <!-- Bank Transfer -->
             @if (settings().enableBankTransfer) {
-            <div (click)="selectPaymentMethod('bank-transfer-br')"
-              class="p-4 border rounded-lg cursor-pointer transition"
-              [class]="selectedPaymentMethod() === 'bank-transfer-br' ? 'border-cyan-500 bg-cyan-900/20' : 'border-gray-600 hover:border-gray-500'">
-              <div class="flex items-center">
-                <input type="radio" name="payment-method"
-                  class="h-4 w-4 text-cyan-600 bg-gray-700 border-gray-500 focus:ring-cyan-500"
-                  [checked]="selectedPaymentMethod() === 'bank-transfer-br'">
-                <label class="ml-3 block text-sm font-medium text-white">{{ 'bank_transfer_br' | translate }}</label>
-                <span
-                  class="ml-2 px-2 py-0.5 text-xs font-semibold bg-yellow-500/20 text-yellow-400 rounded-full">🇧🇷</span>
+            <div (click)="selectPaymentMethod('bank-transfer-br')" class="payment-method-card"
+              [class.selected]="selectedPaymentMethod() === 'bank-transfer-br'">
+              <div class="flex items-center gap-4">
+                <div class="payment-method-radio" [class.checked]="selectedPaymentMethod() === 'bank-transfer-br'">
+                  @if (selectedPaymentMethod() === 'bank-transfer-br') {
+                  <div class="w-2.5 h-2.5 rounded-full bg-cyan-400"></div>
+                  }
+                </div>
+                <div class="payment-method-icon bg-yellow-500/20">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20"
+                    fill="currentColor">
+                    <path fill-rule="evenodd"
+                      d="M10.496 2.132a1 1 0 00-.992 0l-7 4A1 1 0 003 8v7a1 1 0 100 2h14a1 1 0 100-2V8a1 1 0 00.496-1.868l-7-4zM6 9a1 1 0 00-1 1v3a1 1 0 102 0v-3a1 1 0 00-1-1zm3 1a1 1 0 012 0v3a1 1 0 11-2 0v-3zm5-1a1 1 0 00-1 1v3a1 1 0 102 0v-3a1 1 0 00-1-1z"
+                      clip-rule="evenodd" />
+                  </svg>
+                </div>
+                <div class="flex-1">
+                  <div class="flex items-center gap-2">
+                    <span class="text-white font-medium">{{ 'bank_transfer_br' | translate }}</span>
+                    <span
+                      class="px-2 py-0.5 text-xs font-semibold bg-yellow-500/20 text-yellow-400 rounded-full">🇧🇷</span>
+                  </div>
+                  <p class="text-gray-500 text-xs mt-0.5">{{ 'bank_transfer_br_desc' | translate }}</p>
+                </div>
               </div>
-              <p class="text-gray-400 text-sm mt-2 ml-7">{{ 'bank_transfer_br_desc' | translate }}</p>
 
               @if (selectedPaymentMethod() === 'bank-transfer-br') {
-              <div class="mt-4 ml-7 p-4 bg-white/5 rounded-lg border border-white/10 space-y-2 text-sm">
+              <div class="mt-4 p-4 bg-black/30 rounded-xl border border-white/5 space-y-2 text-sm">
                 <div class="flex justify-between"><span class="text-gray-400">{{ 'bank_name' | translate }}:</span><span
-                    class="text-white">{{ settings().bankAccountBR.bankName }}</span></div>
+                    class="text-white font-medium">{{ settings().bankAccountBR.bankName }}</span></div>
                 <div class="flex justify-between"><span class="text-gray-400">{{ 'agency' | translate }}:</span><span
-                    class="text-white">{{ settings().bankAccountBR.agency }}</span></div>
+                    class="text-white font-medium">{{ settings().bankAccountBR.agency }}</span></div>
                 <div class="flex justify-between"><span class="text-gray-400">{{ 'account' | translate }}:</span><span
-                    class="text-white">{{ settings().bankAccountBR.account }}</span></div>
+                    class="text-white font-medium">{{ settings().bankAccountBR.account }}</span></div>
                 <div class="flex justify-between"><span class="text-gray-400">{{ 'cnpj' | translate }}:</span><span
-                    class="text-white">{{ settings().bankAccountBR.cnpj }}</span></div>
+                    class="text-white font-medium">{{ settings().bankAccountBR.cnpj }}</span></div>
                 <div class="flex justify-between"><span class="text-gray-400">{{ 'beneficiary' | translate
-                    }}:</span><span class="text-white">{{ settings().bankAccountBR.beneficiary }}</span></div>
+                    }}:</span><span class="text-white font-medium">{{ settings().bankAccountBR.beneficiary }}</span>
+                </div>
               </div>
               }
             </div>
 
-            <div (click)="selectPaymentMethod('bank-transfer-intl')"
-              class="p-4 border rounded-lg cursor-pointer transition"
-              [class]="selectedPaymentMethod() === 'bank-transfer-intl' ? 'border-cyan-500 bg-cyan-900/20' : 'border-gray-600 hover:border-gray-500'">
-              <div class="flex items-center">
-                <input type="radio" name="payment-method"
-                  class="h-4 w-4 text-cyan-600 bg-gray-700 border-gray-500 focus:ring-cyan-500"
-                  [checked]="selectedPaymentMethod() === 'bank-transfer-intl'">
-                <label class="ml-3 block text-sm font-medium text-white">{{ 'bank_transfer_intl' | translate }}</label>
-                <span class="ml-2 px-2 py-0.5 text-xs font-semibold bg-blue-500/20 text-blue-400 rounded-full">🌍</span>
+            <div (click)="selectPaymentMethod('bank-transfer-intl')" class="payment-method-card"
+              [class.selected]="selectedPaymentMethod() === 'bank-transfer-intl'">
+              <div class="flex items-center gap-4">
+                <div class="payment-method-radio" [class.checked]="selectedPaymentMethod() === 'bank-transfer-intl'">
+                  @if (selectedPaymentMethod() === 'bank-transfer-intl') {
+                  <div class="w-2.5 h-2.5 rounded-full bg-cyan-400"></div>
+                  }
+                </div>
+                <div class="payment-method-icon bg-blue-500/20">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-400" viewBox="0 0 20 20"
+                    fill="currentColor">
+                    <path fill-rule="evenodd"
+                      d="M4.083 9h1.946c.089-1.546.383-2.97.837-4.118A6.004 6.004 0 004.083 9zM10 2a8 8 0 100 16 8 8 0 000-16zm0 2c-.076 0-.232.032-.465.262-.238.234-.497.623-.737 1.182-.389.907-.673 2.142-.766 3.556h3.936c-.093-1.414-.377-2.649-.766-3.556-.24-.56-.5-.948-.737-1.182C10.232 4.032 10.076 4 10 4zm3.971 5c-.089-1.546-.383-2.97-.837-4.118A6.004 6.004 0 0115.917 9h-1.946zm-2.003 2H8.032c.093 1.414.377 2.649.766 3.556.24.56.5.948.737 1.182.233.23.389.262.465.262.076 0 .232-.032.465-.262.238-.234.498-.623.737-1.182.389-.907.673-2.142.766-3.556zm1.166 4.118c.454-1.147.748-2.572.837-4.118h1.946a6.004 6.004 0 01-2.783 4.118zm-6.268 0C6.412 13.97 6.118 12.546 6.03 11H4.083a6.004 6.004 0 002.783 4.118z"
+                      clip-rule="evenodd" />
+                  </svg>
+                </div>
+                <div class="flex-1">
+                  <div class="flex items-center gap-2">
+                    <span class="text-white font-medium">{{ 'bank_transfer_intl' | translate }}</span>
+                    <span class="px-2 py-0.5 text-xs font-semibold bg-blue-500/20 text-blue-400 rounded-full">🌍</span>
+                  </div>
+                  <p class="text-gray-500 text-xs mt-0.5">{{ 'bank_transfer_intl_desc' | translate }}</p>
+                </div>
               </div>
-              <p class="text-gray-400 text-sm mt-2 ml-7">{{ 'bank_transfer_intl_desc' | translate }}</p>
 
               @if (selectedPaymentMethod() === 'bank-transfer-intl') {
-              <div class="mt-4 ml-7 p-4 bg-white/5 rounded-lg border border-white/10 space-y-2 text-sm">
+              <div class="mt-4 p-4 bg-black/30 rounded-xl border border-white/5 space-y-2 text-sm">
                 <div class="flex justify-between"><span class="text-gray-400">{{ 'bank_name' | translate }}:</span><span
-                    class="text-white">{{ settings().bankAccountIntl.bankName }}</span></div>
+                    class="text-white font-medium">{{ settings().bankAccountIntl.bankName }}</span></div>
                 <div class="flex justify-between"><span class="text-gray-400">{{ 'swift_bic' | translate }}:</span><span
-                    class="text-white">{{ settings().bankAccountIntl.swift }}</span></div>
+                    class="text-white font-medium">{{ settings().bankAccountIntl.swift }}</span></div>
                 <div class="flex justify-between"><span class="text-gray-400">{{ 'iban' | translate }}:</span><span
-                    class="text-white">{{ settings().bankAccountIntl.iban }}</span></div>
-                <div class="flex justify-between"><span class="text-gray-400">{{ 'address' | translate }}:</span><span
-                    class="text-white text-right max-w-[200px]">{{ settings().bankAccountIntl.address }}</span></div>
+                    class="text-white font-medium">{{ settings().bankAccountIntl.iban }}</span></div>
+                <div class="flex justify-between items-start"><span class="text-gray-400">{{ 'address' | translate
+                    }}:</span><span class="text-white text-right max-w-[200px] font-medium">{{
+                    settings().bankAccountIntl.address }}</span></div>
                 <div class="flex justify-between"><span class="text-gray-400">{{ 'beneficiary' | translate
-                    }}:</span><span class="text-white">{{ settings().bankAccountIntl.beneficiary }}</span></div>
+                    }}:</span><span class="text-white font-medium">{{ settings().bankAccountIntl.beneficiary }}</span>
+                </div>
               </div>
               }
             </div>
@@ -194,16 +503,28 @@
           </div>
 
           @if (paymentError()) {
-          <div class="mt-6 bg-red-500/10 border border-red-500/30 text-red-300 p-3 rounded-lg text-sm">
+          <div
+            class="mt-6 bg-red-500/10 border border-red-500/30 text-red-300 p-4 rounded-xl text-sm flex items-center gap-3">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-400 flex-shrink-0" viewBox="0 0 20 20"
+              fill="currentColor">
+              <path fill-rule="evenodd"
+                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                clip-rule="evenodd" />
+            </svg>
             {{ paymentError() }}
           </div>
           }
 
           <div class="mt-8">
             <button (click)="processPayment()" [disabled]="!selectedPaymentMethod() || isLoading()"
-              class="w-full px-6 py-3 text-white font-semibold rounded-xl btn-primary-gradient transition disabled:opacity-50 disabled:cursor-not-allowed disabled:box-shadow-none flex items-center justify-center">
+              class="w-full px-6 py-4 text-white font-semibold rounded-xl transition-all duration-300 flex items-center justify-center gap-3 text-lg"
+              [class]="!selectedPaymentMethod() || isLoading()
+                ? 'bg-gray-600/50 cursor-not-allowed'
+                : isDowngrade()
+                  ? 'bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 shadow-[0_0_25px_rgba(16,185,129,0.3)] hover:shadow-[0_0_35px_rgba(16,185,129,0.5)] transform hover:-translate-y-0.5'
+                  : 'btn-primary-gradient shadow-[0_0_25px_rgba(6,182,212,0.3)] hover:shadow-[0_0_35px_rgba(6,182,212,0.5)] transform hover:-translate-y-0.5'">
               @if (isLoading()) {
-              <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
+              <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
                 viewBox="0 0 24 24">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor"
@@ -211,12 +532,51 @@
                 </path>
               </svg>
               {{ 'processing_payment' | translate }}
+              } @else if (isDowngrade()) {
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd"
+                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                  clip-rule="evenodd" />
+              </svg>
+              {{ 'confirm_downgrade' | translate }}
               } @else {
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd"
+                  d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
+                  clip-rule="evenodd" />
+              </svg>
               {{ 'complete_purchase' | translate }}
               }
             </button>
           </div>
 
+          <!-- Trust badges -->
+          <div class="mt-6 flex items-center justify-center gap-6 text-gray-500 text-xs">
+            <div class="flex items-center gap-1.5">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd"
+                  d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                  clip-rule="evenodd" />
+              </svg>
+              <span>256-bit SSL</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd"
+                  d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
+                  clip-rule="evenodd" />
+              </svg>
+              <span>Secure Payment</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                  clip-rule="evenodd" />
+              </svg>
+              <span>PCI Compliant</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>

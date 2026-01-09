@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject, signal, OnInit, computed, effect } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslatePipe } from '../../pipes/translate.pipe';
-import { DynamicCurrencyPipe } from '../../pipes/dynamic-currency.pipe';
 import { AuthService } from '../../services/auth.service';
 import { PricingService } from '../../services/pricing.service';
 import { CurrencyService, CryptoAsset } from '../../services/currency.service';
@@ -16,7 +15,7 @@ type PaymentMethod = 'credit-card' | 'crypto-web3' | 'crypto-gatepay' | 'pix' | 
 @Component({
   selector: 'app-checkout',
   standalone: true,
-  imports: [TranslatePipe, DynamicCurrencyPipe],
+  imports: [TranslatePipe],
   templateUrl: './checkout.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -46,6 +45,9 @@ export class CheckoutComponent implements OnInit {
 
   settings = this.adminService.settings;
 
+  // Plan levels for comparison
+  private planLevels = { free: 0, basic: 1, premium: 2 };
+
   planDisplayName = computed(() => {
     const p = this.plan();
     return p ? this.translationService.translate()(p) : '';
@@ -56,36 +58,105 @@ export class CheckoutComponent implements OnInit {
     return p ? this.translationService.translate()(p) : '';
   });
 
-  // Proration info
+  // Get the exact plan price (no proration or fees)
+  planPrice = computed(() => {
+    const targetPlan = this.plan();
+    const cycle = this.billingCycle();
+    if (!targetPlan) return 0;
+    return this.pricingService.getPrice(targetPlan, cycle);
+  });
+
+  // Proration info (for reference, not for charging)
   daysRemaining = computed(() => this.authService.getDaysRemainingInCycle());
   totalDaysInCycle = computed(() => this.authService.getTotalDaysInCycle());
 
-  proratedAmount = computed(() => {
+  // Determine if this is an upgrade or downgrade
+  isUpgrade = computed(() => {
+    const targetPlan = this.plan();
+    const currentSubPlan = this.currentPlan();
+    if (!targetPlan) return false;
+    return this.planLevels[targetPlan] > this.planLevels[currentSubPlan];
+  });
+
+  isDowngrade = computed(() => {
+    const targetPlan = this.plan();
+    const currentSubPlan = this.currentPlan();
+    if (!targetPlan) return false;
+    return this.planLevels[targetPlan] < this.planLevels[currentSubPlan];
+  });
+
+  // Credit card installment options
+  selectedInstallments = signal(1);
+  maxInstallmentsWithoutFee = 3;
+  cardFeePercent = 2.99; // Card brand fee for installments > 3
+
+  // Calculate amount to pay (exact plan price + card fee if applicable)
+  amountToPay = computed(() => {
+    const basePrice = this.planPrice();
+    const method = this.selectedPaymentMethod();
+    const installments = this.selectedInstallments();
+
+    // Only add fee for credit card with more than 3 installments
+    if (method === 'credit-card' && installments > this.maxInstallmentsWithoutFee) {
+      const fee = basePrice * (this.cardFeePercent / 100);
+      return Math.round((basePrice + fee) * 100) / 100;
+    }
+
+    return basePrice;
+  });
+
+  // Calculate card fee amount
+  cardFeeAmount = computed(() => {
+    const basePrice = this.planPrice();
+    const method = this.selectedPaymentMethod();
+    const installments = this.selectedInstallments();
+
+    if (method === 'credit-card' && installments > this.maxInstallmentsWithoutFee) {
+      return Math.round((basePrice * (this.cardFeePercent / 100)) * 100) / 100;
+    }
+    return 0;
+  });
+
+  // Calculate refund amount for downgrades (proportional refund)
+  refundAmount = computed(() => {
     const targetPlan = this.plan();
     const currentSubPlan = this.currentPlan();
     const cycle = this.billingCycle();
 
-    if (!targetPlan || !currentSubPlan) return 0;
+    if (!targetPlan || !currentSubPlan || currentSubPlan === 'free') return 0;
 
+    const currentPrice = this.pricingService.getPrice(currentSubPlan as 'basic' | 'premium', cycle);
     const newPrice = this.pricingService.getPrice(targetPlan, cycle);
-    let oldPrice = 0;
-    if (currentSubPlan !== 'free') {
-      oldPrice = this.pricingService.getPrice(currentSubPlan as 'basic' | 'premium', cycle);
-    }
 
-    const priceDiff = newPrice - oldPrice;
+    const priceDiff = currentPrice - newPrice;
     if (priceDiff <= 0) return 0;
 
-    // Calculate prorated amount based on days remaining
+    // Calculate prorated refund based on days remaining
     const daysRemaining = this.daysRemaining();
     const totalDays = this.totalDaysInCycle();
-    return (priceDiff / totalDays) * daysRemaining;
+    return Math.round(((priceDiff / totalDays) * daysRemaining) * 100) / 100;
+  });
+
+  // Refund method text
+  refundMethodText = computed(() => {
+    const t = this.translationService.translate();
+    return t('checkout_refund_method_original');
+  });
+
+  // Billing cycle end date formatted
+  billingEndDate = computed(() => {
+    return this.authService.getBillingCycleEndDate().toLocaleDateString();
   });
 
   constructor() {
     effect(() => {
-      const proratedPrice = this.proratedAmount();
-      this.price.set(Math.max(0, proratedPrice));
+      // For upgrades: show exact plan price (with card fee if applicable)
+      // For downgrades: price is 0 (user receives refund, doesn't pay)
+      if (this.isDowngrade()) {
+        this.price.set(0);
+      } else {
+        this.price.set(this.amountToPay());
+      }
     });
   }
 
@@ -146,15 +217,38 @@ export class CheckoutComponent implements OnInit {
     const newPlan = this.plan();
     const cycle = this.billingCycle();
     if (newPlan) {
-      // Use upgradePlan to track billing cycle
-      this.authService.upgradePlan(newPlan, cycle);
       const t = this.translationService.translate();
       const planName = t(newPlan);
-      this.toastService.show({
-        titleKey: 'notification_payment_success_title',
-        messageKey: 'notification_payment_success_body',
-        params: { planName }
-      });
+
+      if (this.isDowngrade()) {
+        // Apply downgrade immediately and schedule refund
+        const refund = this.refundAmount();
+        this.authService.downgradePlan(newPlan, refund);
+
+        if (refund > 0) {
+          const refundDate = this.authService.getBillingCycleEndDate().toLocaleDateString();
+          this.toastService.show({
+            titleKey: 'notification_downgrade_complete_title',
+            messageKey: 'notification_downgrade_with_refund_body',
+            params: { planName, refundAmount: this.currencyService.formatBRL(refund), refundDate }
+          });
+        } else {
+          this.toastService.show({
+            titleKey: 'notification_downgrade_complete_title',
+            messageKey: 'notification_downgrade_complete_body',
+            params: { planName }
+          });
+        }
+      } else {
+        // Upgrade immediately
+        this.authService.upgradePlan(newPlan, cycle);
+        this.toastService.show({
+          titleKey: 'notification_payment_success_title',
+          messageKey: 'notification_payment_success_body',
+          params: { planName }
+        });
+      }
+
       this.isLoading.set(false);
       this.router.navigate(['/dashboard']);
     } else {

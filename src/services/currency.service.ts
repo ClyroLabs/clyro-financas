@@ -16,11 +16,12 @@ export type CryptoAsset = 'ETH' | 'BNB' | 'USDT' | 'WBTC' | 'BTC';
 export class CurrencyService implements OnDestroy {
   private translationService = inject(TranslationService);
 
-  // Mock exchange rates based on BRL (Base Currency)
+  // Exchange rates: how much 1 BRL is worth in other currencies
+  // BRL is the BASE currency (prices are stored in BRL)
   private fiatRates = signal({
-    'BRL': 1.0,
-    'USD': 0.183, // ~ 1/5.45
-    'EUR': 0.169  // ~ 1/5.90
+    'BRL': 1.0,      // Base currency
+    'USD': 0.183,    // 1 BRL = ~0.183 USD (i.e., 1 USD = ~5.45 BRL)
+    'EUR': 0.169     // 1 BRL = ~0.169 EUR (i.e., 1 EUR = ~5.90 BRL)
   });
 
   private cryptoRatesUSD = signal<Record<CryptoAsset, number>>({
@@ -34,6 +35,7 @@ export class CurrencyService implements OnDestroy {
   private updateInterval: any;
   private lastCryptoUpdate = 0;
 
+  // Default to BRL as it's the base currency
   selectedCurrency = signal<Currency>('BRL');
 
   constructor() {
@@ -110,11 +112,40 @@ export class CurrencyService implements OnDestroy {
     }
   });
 
-  convert(valueInBaseCurrency: number): number {
-    const targetCurrency = this.currencyInfo().currency;
+  /**
+   * Convert a value FROM BRL (base currency) TO the selected currency
+   */
+  convertFromBRL(valueInBRL: number): number {
+    const targetCurrency = this.selectedCurrency();
     const currentRates = this.fiatRates();
-    const rate = currentRates[targetCurrency as keyof typeof currentRates] ?? 1;
-    return valueInBaseCurrency * rate;
+    const rate = currentRates[targetCurrency] ?? 1;
+    return valueInBRL * rate;
+  }
+
+  /**
+   * Convert a value FROM the selected currency TO BRL
+   */
+  convertToBRL(valueInSelectedCurrency: number): number {
+    const sourceCurrency = this.selectedCurrency();
+    const currentRates = this.fiatRates();
+    const rate = currentRates[sourceCurrency] ?? 1;
+    if (rate === 0) return 0;
+    return valueInSelectedCurrency / rate;
+  }
+
+  /**
+   * Convert a value from BRL to USD specifically
+   */
+  convertBRLtoUSD(valueInBRL: number): number {
+    const currentRates = this.fiatRates();
+    return valueInBRL * currentRates.USD;
+  }
+
+  /**
+   * Legacy convert method - treats input as BRL and converts to selected currency
+   */
+  convert(valueInBaseCurrency: number): number {
+    return this.convertFromBRL(valueInBaseCurrency);
   }
 
   convertToUsd(valueInCurrentCurrency: number): number {
@@ -171,10 +202,35 @@ export class CurrencyService implements OnDestroy {
     return new Intl.NumberFormat(locale, formatOptions).format(value);
   }
 
+  /**
+   * Format a value as BRL (Brazilian Real)
+   */
+  formatBRL(value: number): string {
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
+    }).format(value);
+  }
+
+  /**
+   * Format a value as USD
+   */
   formatUSD(value: number): string {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
     }).format(value);
+  }
+
+  /**
+   * Format a BRL value with its USD equivalent shown below
+   * Returns an object with both formatted strings
+   */
+  formatWithUSDReference(valueInBRL: number): { primary: string; secondary: string } {
+    const usdValue = this.convertBRLtoUSD(valueInBRL);
+    return {
+      primary: this.formatBRL(valueInBRL),
+      secondary: `~ ${this.formatUSD(usdValue)}`
+    };
   }
 }

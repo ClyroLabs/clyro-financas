@@ -3,7 +3,6 @@ import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { TranslatePipe } from '../../pipes/translate.pipe';
 import { PricingService } from '../../services/pricing.service';
-import { DynamicCurrencyPipe } from '../../pipes/dynamic-currency.pipe';
 import { CurrencyService } from '../../services/currency.service';
 import { ConfirmationModalComponent } from '../../components/confirmation-modal/confirmation-modal.component';
 import { TranslationService } from '../../services/translation.service';
@@ -12,7 +11,7 @@ import { ToastService } from '../../services/toast.service';
 @Component({
   selector: 'app-pricing',
   standalone: true,
-  imports: [TranslatePipe, DynamicCurrencyPipe, ConfirmationModalComponent],
+  imports: [TranslatePipe, ConfirmationModalComponent],
   templateUrl: './pricing.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -43,14 +42,33 @@ export class PricingComponent {
   basicPrice = computed(() => this.prices().basic[this.billingCycle()]);
   premiumPrice = computed(() => this.prices().premium[this.billingCycle()]);
 
+  // Calculate proportional refund for downgrade
+  calculateRefundAmount = computed(() => {
+    const targetPlan = this.downgradeToPlan();
+    const currentPlanKey = this.currentPlan();
+    if (!targetPlan || targetPlan === currentPlanKey) return 0;
+
+    const cycle = this.authService.billingCycle();
+    const currentPrice = this.getCurrentPlanPrice(currentPlanKey, cycle);
+    const targetPrice = this.getTargetPlanPrice(targetPlan, cycle);
+
+    const daysRemaining = this.authService.getDaysRemainingInCycle();
+    const totalDays = this.authService.getTotalDaysInCycle();
+
+    return this.authService.calculateProportionalRefund(
+      currentPrice, targetPrice, daysRemaining, totalDays
+    );
+  });
+
   downgradeMessageParams = computed(() => {
     const planKey = this.downgradeToPlan();
     if (!planKey) return {};
-    const endDate = this.authService.getBillingCycleEndDate();
-    const formattedDate = endDate.toLocaleDateString();
+    const refundAmount = this.calculateRefundAmount();
+    const refundDate = this.authService.getBillingCycleEndDate();
     return {
       planName: this.translationService.translate()(planKey),
-      endDate: formattedDate
+      refundAmount: this.currencyService.formatBRL(refundAmount),
+      refundDate: refundDate.toLocaleDateString()
     };
   });
 
@@ -71,8 +89,8 @@ export class PricingComponent {
 
   daysRemaining = computed(() => this.authService.getDaysRemainingInCycle());
 
-  // Scheduled downgrade info
-  scheduledDowngrade = this.authService.scheduledDowngrade;
+  // Pending refund info
+  pendingRefund = this.authService.pendingRefund;
 
   handlePlanSelection(targetPlan: 'basic' | 'premium') {
     if (this.planLevels[targetPlan] > this.planLevels[this.currentPlan()]) {
@@ -113,16 +131,26 @@ export class PricingComponent {
     setTimeout(() => {
       const plan = this.downgradeToPlan();
       if (plan) {
-        // Schedule downgrade for end of billing cycle instead of immediate change
-        this.authService.scheduleDowngrade(plan);
+        const refundAmount = this.calculateRefundAmount();
+        // Apply downgrade immediately with refund scheduled
+        this.authService.downgradePlan(plan, refundAmount);
         const t = this.translationService.translate();
         const planName = t(plan);
-        const endDate = this.authService.getBillingCycleEndDate().toLocaleDateString();
-        this.toastService.show({
-          titleKey: 'notification_downgrade_scheduled_title',
-          messageKey: 'notification_downgrade_scheduled_body',
-          params: { planName, endDate }
-        });
+
+        if (refundAmount > 0) {
+          const refundDate = this.authService.getBillingCycleEndDate().toLocaleDateString();
+          this.toastService.show({
+            titleKey: 'notification_downgrade_complete_title',
+            messageKey: 'notification_downgrade_with_refund_body',
+            params: { planName, refundAmount: this.currencyService.formatBRL(refundAmount), refundDate }
+          });
+        } else {
+          this.toastService.show({
+            titleKey: 'notification_downgrade_complete_title',
+            messageKey: 'notification_downgrade_complete_body',
+            params: { planName }
+          });
+        }
       }
       this.isProcessingDowngrade.set(false);
       this.showDowngradeModal.set(false);
@@ -139,4 +167,17 @@ export class PricingComponent {
     if (this.currentPlan() === targetPlan) return 'current';
     return this.planLevels[targetPlan] > this.planLevels[this.currentPlan()] ? 'upgrade' : 'downgrade';
   }
+
+  private getCurrentPlanPrice(plan: string, cycle: 'monthly' | 'yearly'): number {
+    if (plan === 'basic') return this.prices().basic[cycle];
+    if (plan === 'premium') return this.prices().premium[cycle];
+    return 0;
+  }
+
+  private getTargetPlanPrice(plan: string, cycle: 'monthly' | 'yearly'): number {
+    if (plan === 'basic') return this.prices().basic[cycle];
+    if (plan === 'premium') return this.prices().premium[cycle];
+    return 0; // free
+  }
 }
+

@@ -10,6 +10,9 @@ export interface GoogleAuthUser {
 
 const USER_KEY = 'clyro-user';
 const USERS_KEY = 'clyro-users';
+const PENDING_REFUND_KEY = 'clyro-pending-refund';
+const BILLING_CYCLE_KEY = 'clyro-billing-cycle';
+const BILLING_CYCLE_START_KEY = 'clyro-billing-cycle-start';
 
 @Injectable({
   providedIn: 'root'
@@ -33,7 +36,7 @@ export class AuthService {
   // Billing cycle tracking for proration
   billingCycleStart = signal<Date>(new Date());
   billingCycle = signal<'monthly' | 'yearly'>('monthly');
-  scheduledDowngrade = signal<{ plan: SubscriptionPlan; effectiveDate: Date } | null>(null);
+  pendingRefund = signal<{ amount: number; refundDate: Date } | null>(null);
 
   // Mock Google users for the Google Auth modal
   private googleAuthUsers: GoogleAuthUser[] = [
@@ -53,20 +56,9 @@ export class AuthService {
       }
     }
 
-    // FORCE FIX: Ensure current user and default user are Premium (migrations for existing localStorage data)
-    this._users.update(users => {
-      const updated = { ...users };
-      if (updated['user@clyro.com']) {
-        updated['user@clyro.com'].subscriptionPlan = 'premium';
-      }
-      return updated;
-    });
-    this.saveUsersToStorage();
-
-    if (this.user()) {
-      this.user.update(u => u ? { ...u, subscriptionPlan: 'premium' } : null);
-      this.saveCurrentUser();
-    }
+    // Load billing info and pending refund from localStorage
+    this.loadBillingInfo();
+    this.loadPendingRefund();
   }
 
   private loadUsersFromStorage() {
@@ -236,16 +228,105 @@ export class AuthService {
 
   // Upgrade plan immediately and start new billing cycle
   upgradePlan(plan: SubscriptionPlan, cycle: 'monthly' | 'yearly') {
+    const oldPlan = this.subscriptionPlan();
     this.billingCycleStart.set(new Date());
     this.billingCycle.set(cycle);
-    this.scheduledDowngrade.set(null); // Cancel any scheduled downgrade
+    this.clearPendingRefund();
+    this.saveBillingInfo();
     this.setSubscriptionPlan(plan);
   }
 
-  // Schedule downgrade to take effect at end of current billing cycle
-  scheduleDowngrade(plan: SubscriptionPlan) {
-    const endDate = this.getBillingCycleEndDate();
-    this.scheduledDowngrade.set({ plan, effectiveDate: endDate });
+  // Downgrade plan immediately (refund is processed separately)
+  downgradePlan(plan: SubscriptionPlan, refundAmount: number) {
+    // Schedule the refund for processing at end of billing cycle
+    if (refundAmount > 0) {
+      this.schedulePendingRefund(refundAmount);
+    }
+
+    // Apply downgrade immediately
+    this.billingCycleStart.set(new Date());
+    this.saveBillingInfo();
+    this.setSubscriptionPlan(plan);
+  }
+
+  // Schedule a pending refund
+  private schedulePendingRefund(amount: number) {
+    const refundDate = this.getBillingCycleEndDate();
+    this.pendingRefund.set({ amount, refundDate });
+    this.savePendingRefund();
+  }
+
+  // Clear pending refund
+  private clearPendingRefund() {
+    this.pendingRefund.set(null);
+    localStorage.removeItem(PENDING_REFUND_KEY);
+  }
+
+  // Load pending refund from localStorage
+  private loadPendingRefund() {
+    const stored = localStorage.getItem(PENDING_REFUND_KEY);
+    if (stored) {
+      try {
+        const data = JSON.parse(stored);
+        this.pendingRefund.set({
+          amount: data.amount,
+          refundDate: new Date(data.refundDate)
+        });
+      } catch (e) {
+        console.error('Failed to load pending refund', e);
+        localStorage.removeItem(PENDING_REFUND_KEY);
+      }
+    }
+  }
+
+  // Save pending refund to localStorage
+  private savePendingRefund() {
+    const refund = this.pendingRefund();
+    if (refund) {
+      localStorage.setItem(PENDING_REFUND_KEY, JSON.stringify({
+        amount: refund.amount,
+        refundDate: refund.refundDate.toISOString()
+      }));
+    } else {
+      localStorage.removeItem(PENDING_REFUND_KEY);
+    }
+  }
+
+  // Calculate proportional refund for plan change
+  calculateProportionalRefund(
+    oldPlanPrice: number,
+    newPlanPrice: number,
+    daysRemaining: number,
+    totalDaysInCycle: number
+  ): number {
+    if (newPlanPrice >= oldPlanPrice) return 0; // No refund for upgrade
+    const priceDifference = oldPlanPrice - newPlanPrice;
+    const proportionalAmount = (priceDifference / totalDaysInCycle) * daysRemaining;
+    return Math.round(proportionalAmount * 100) / 100;
+  }
+
+  // Load billing info from localStorage
+  private loadBillingInfo() {
+    const storedCycle = localStorage.getItem(BILLING_CYCLE_KEY);
+    const storedStart = localStorage.getItem(BILLING_CYCLE_START_KEY);
+
+    if (storedCycle === 'monthly' || storedCycle === 'yearly') {
+      this.billingCycle.set(storedCycle);
+    }
+
+    if (storedStart) {
+      try {
+        this.billingCycleStart.set(new Date(storedStart));
+      } catch (e) {
+        console.error('Failed to load billing cycle start', e);
+      }
+    }
+  }
+
+  // Save billing info to localStorage
+  private saveBillingInfo() {
+    localStorage.setItem(BILLING_CYCLE_KEY, this.billingCycle());
+    localStorage.setItem(BILLING_CYCLE_START_KEY, this.billingCycleStart().toISOString());
   }
 
   // Get the end date of the current billing cycle
