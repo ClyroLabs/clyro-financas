@@ -1,5 +1,5 @@
 {
-    "buildCommand": "node scripts/inject-env.js && npm run build",
+    "buildCommand": "node scripts/inject-env.cjs && npm run build",
     "outputDirectory": "dist",
     "framework": "angular",
     "rewrites": [
